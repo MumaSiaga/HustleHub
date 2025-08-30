@@ -16,42 +16,52 @@
             <section class="profile">
                 <img src="../../visuals/profile.jpeg" class="profile_pic">
                 <section>
-                <h3>Sophia Bennett</h3>
-                <p>Software Engineer at Tech Innovators | Passionate about scalable apps</p>
-                <p>San Francisco Bay Area</p>
+                <h3><%=user.username%></h3>
+                <p><%=user.location%></p>
                 </section>
             </section>
         </section>
 
         <nav class="navbar">
-        <a href="#" class="active">About</a>
-        <a href="#">Skills</a>
+ 
         </nav>
 
         <section class="content">
             <section class="main">
                 <section class="card about">
                     <h2>About</h2>
-                    <p>Highly motivated Software Engineer with 5+ years of experience...</p>
+                    <p><%=user.about%></p>
                 </section>
 
                 <section class="card skills">
                 <h2>Skills</h2>
-                <span class="skill">Java</span>
-                <span class="skill">Python</span>
-                <span class="skill">SQL</span>
-                <span class="skill">JavaScript</span>
+    <% if (user.skills && user.skills.length > 0) { %>
+    <% 
+      // Split the first element of the array (the long string) by commas
+      let skillsArray = user.skills[0].split(','); 
+      skillsArray.forEach(skill => { 
+    %>
+      <span class="skill"><%= skill.trim() %></span>
+    <% }); %>
+  <% } else { %>
+    <p>No skills listed yet.</p>
+  <% } %>
+
                 </section>
             </section>
 
         <aside class="sidebar">
             <section class="card">
             <h2>Certifications</h2>
-            <ul>
-                <li>name of Certifications</li>
-                <li>name of Certifications</li>
-                <li>name of Certifications</li>
-            </ul>
+            <% if (user.certifications && user.certifications.length > 0) { %>
+                <ul>
+                    <% user.certifications.forEach(cert => { %>
+                        <li><%= cert %></li>
+                    <% }); %>
+                </ul>
+            <% } else { %>
+                <p>No certifications listed yet.</p>
+            <% } %>
             </section>
         </aside>
         </section>

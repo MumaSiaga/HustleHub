@@ -7,7 +7,14 @@ const User = require('../model/User');
 const bcrypt = require('bcrypt');
 // const adminController = require('../controllers/adminController');
 
-
+router.post('/logout', (req, res) => {
+  req.logout(() => {
+    req.session.destroy(err => {
+      if (err) console.error('Session destruction error:', err);
+      res.redirect('/');
+    });
+  });
+});
 
 router.post('/admin/login', async (req, res) => {
   const { email, password } = req.body;

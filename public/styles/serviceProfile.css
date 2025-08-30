@@ -109,6 +109,7 @@ body {
     border-radius: 8px;
     padding: 1.5rem;
     border: 1px solid #e5e7eb;
+    overflow: hidden;
 }
 
 .card h2 {

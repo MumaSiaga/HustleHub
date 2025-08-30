@@ -32,13 +32,6 @@ router.get('/login', redirectIfLoggedIn, (req, res) => {
 });
 
 
-router.get('/logout', (req, res) => {
-  req.logout(() => {
-    req.session.destroy(err => {
-      if (err) console.error('Session destruction error:', err);
-      res.redirect('/');
-    });
-  });
-});
+
 
 module.exports = router;
