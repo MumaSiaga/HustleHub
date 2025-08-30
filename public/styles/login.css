@@ -1,0 +1,134 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body, html {
+    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('/images/download.jpg');
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+section {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 60px 50px;
+    width: 550px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 25px;
+}
+
+
+form h1 {
+    font-size: 2.5rem;
+    color: #333;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+input {
+    width: 100%;
+    padding: 14px 18px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    transition: border-color 0.3s;
+}
+
+input:focus {
+    border-color: #333;
+    outline: none;
+}
+
+button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    font-size: 1.1rem;
+    border: none;
+    border-radius: 10px;
+    background-color: #153291;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button[type="submit"]:hover {
+    background-color: #1f1f1f;
+}
+
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+
+
+.google-btn img {
+    height: 20px;
+        background: transparent;
+    border: none;
+}
+
+
+@media (max-width: 768px) {
+  section {
+    width: 100%;
+    padding: 30px 15px; /* slightly reduced padding to avoid crowding */
+    box-sizing: border-box;
+  }
+
+  form {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  form h1 {
+    font-size: 2.2rem;
+    text-align: center;
+  }
+
+  input,
+  button[type="submit"],
+  .google-btn {
+    font-size: 1.1rem;
+    padding: 14px 16px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+  }
+
+  .google-btn img {
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 8px;
+
+  }
+}
+

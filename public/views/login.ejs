@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EchoLink</title>
+    <link rel="stylesheet" href="../styles/login.css">
+</head>
+<body>
+    <section>
+        <form id="login-form">
+            <h1>Login</h1>
+            
+                
+                <input placeholder="email" type="email" id="email" name="email" required>
+            
+            
+                <input placeholder="password" type="password" id="password" name="password" required>
+            
+            <button type="submit">Login</button>
+        </form>
+      <button onclick="location.href='/auth/google'" class="google-btn">
+  <img src="../images/Google__G__logo.svg" alt="Google" width="20">
+  <span>Continue with Google</span>
+</button>
+    </section>
+    <script>
+         document.getElementById('login-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    const res = await fetch('/admin/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (res.ok) {
+      window.location.href = '/admin';
+    } else {
+      const err = await res.text();
+      alert(err || 'Login failed');
+    }
+  });
+    </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+const express = require('express');
+const User = require('../model/User');
+const passport = require('passport');
+const { ensureAuth, redirectIfLoggedIn } = require('../middleware/authmiddleware');
+const router = express.Router();
+
+
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+
+router.get('/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),
+  (req, res) => {
+    if (!req.user.role) {
+      return res.redirect('/setup');
+    }
+
+    res.redirect('/chat');
+  }
+);
+router.get('/', redirectIfLoggedIn, (req, res) => {
+  res.render('landing'); 
+});
+
+router.get('/login', redirectIfLoggedIn, (req, res) => {
+  res.render('login');
+});
+
+
+router.get('/logout', (req, res) => {
+  req.logout(() => {
+    req.session.destroy(err => {
+      if (err) console.error('Session destruction error:', err);
+      res.redirect('/');
+    });
+  });
+});
+
+module.exports = router;
