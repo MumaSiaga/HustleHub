@@ -33,10 +33,10 @@ router.post('/admin/login', async (req, res) => {
 
 router.get('/setup', ensureAuth, (req, res) => {
   const user = req.user || req.session.user;
-  
-  if (user.age) {
-    return res.redirect('/chat');
-  }
+
+ if(user.role=='freelancer'){
+   return res.redirect('/service/home');
+ }
 
   res.render('setup', { username: user.username });
 });
@@ -59,16 +59,23 @@ router.post('/setup', ensureAuth, async (req, res) => {
 });
 router.post('/profile/complete',ensureAuth,async(req,res)=>{
   const user = req.user || req.session.user;
-  const { role, fullName, location, skills, profilePic, bio } = req.body;
+  const {location, skills, bio} = req.body;
 
   try {
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
-      { role, fullName, location, skills, profilePic, bio },
+      { location, skills, about: bio },
       { new: true }
     );
 
-    return res.render('finish-profile',{role: updatedUser.role});
+    if (updatedUser.role=='freelancer') {
+      return res.render('serviceHome', { user: updatedUser });
+    }
+    else if (updatedUser.role=='client') {
+      return res.redirect('freelancer/home');
+    }
+
+    res.redirect('/chat');
   } catch (err) {
     console.error('Error updating user profile:', err);
     res.status(500).send('Error updating profile');

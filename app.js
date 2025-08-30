@@ -39,6 +39,7 @@ app.use(express.json());
 
 app.use('/', require('./backend/routes/index'));
 app.use('/auth', require('./backend/routes/authRoutes'));
+app.use('/service', require('./backend/routes/serviceRoutes'));
 
 
 

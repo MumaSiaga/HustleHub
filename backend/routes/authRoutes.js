@@ -15,7 +15,12 @@ router.get('/google/callback',
       return res.redirect('/setup');
     }
 
-    res.redirect('/chat');
+    if (req.user.role === 'freelancer') {
+      return res.redirect('/service/home');
+    } else if (req.user.role === 'client') {
+      return res.redirect('/freelancer/home');
+    }
+
   }
 );
 router.get('/', redirectIfLoggedIn, (req, res) => {
