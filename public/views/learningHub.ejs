@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerConnect - Learning Hub</title>
+    <link rel="stylesheet" href="../styles/learningHub.css">
+    <link rel="stylesheet" href="../styles/nagivation.css">
+</head>
+<body>
+     <%- include('partials/navigation') %>
+     <section section class="main_content" id="mainContent">
+        <%- include('partials/topbar') %>
+        <section class="site-wrapper">
+            <section class="main-content">
+                <section class="intro">
+                    <h2>Learning Hub</h2>
+                    <p>Explore courses and resources to enhance your skills and career prospects.</p>
+                    <section class="search-bar">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="icon2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                        <input type="search" placeholder="search for courses or skills...">
+                    </section>
+                </section>
+
+                <section class="featured-courses">
+                    <h3>Featured Courses</h3>
+                    <section class="course-grid">
+                        <article class="course-card">
+                            <section>
+                                <img src="../../visuals/painter.jpeg">
+                            </section>
+                            <section class="course-info">
+                                <h4>Reparing</h4>
+                                <p>Learn to repare home appliances.</p>
+                                <span>1h 30min</span>
+                            </section>
+                        </article>
+                        <article class="course-card">
+                            <section>
+                                <img src="../../visuals/plumbing.jpeg">
+                            </section>
+                            <section class="course-info">
+                                <h4>Plumbing</h4>
+                                <p>Learn to plumb to make your living</p>
+                                <span>1h 30min</span>
+                            </section>
+                        </article>
+                        <article class="course-card">
+                            <section>
+                                <img src="../../visuals/python.png">
+                            </section>
+                            <section class="course-info">
+                                <h4>Software Development Fundamentals</h4>
+                                <p>Learn the basics of coding and software development.</p>
+                                <span>1h 30min</span>
+                            </section>
+                        </article>
+                    </section>
+                </section>
+
+                <section class="course-catalog">
+                    <h3>Course Catalog</h3>
+                    <nav class="catalog-tabs">
+                        <a href="#" class="active">All Courses</a>
+                        <a href="#">IT & Technology</a>
+                        <a href="#">Healthcare</a>
+                        <a href="#">Trades</a>
+                    </nav>
+                    <section class="catalog-list">
+                        <article class="catalog-item">
+                            <section class="item-info">
+                                <h4>Introduction to Python Programming</h4>
+                                <p>Learn the basics of Python, a versatile programming language used in web development, data analysis, and more.</p>
+                                <span>2h 30min</span>
+                            </section>
+                            <section class="item-action">
+                                <img src="../../visuals/python.png">
+                                <button class="start_course">Start Course</button>
+                            </section>
+                        </article>
+                        <article class="catalog-item">
+                            <section class="item-info">
+                                <h4>Introduction to C++ Programming</h4>
+                                <p>Learn the basics of Python, a versatile programming language used in web development, data analysis, and more.</p>
+                                <span>2h 30min</span>
+                            </section>
+                            <section class="item-action">
+                                <img src="../../visuals/c++.jpeg">
+                                <button class="start_course">Start Course</button>
+                            </section>
+                        </article>
+
+                    </section>
+                </section>
+
+                <section class="certificates">
+                    <h3>My Certificates & Badges</h3>
+                    <section class="certificates-grid">
+                        <article class="certificate-card">
+                            <section>
+                                <img src="../../visuals/python.png">
+                            </section>
+                            <p>Python Fundamentals Certificate</p>
+                        </article>
+                        <article class="certificate-card">
+                            <section>
+                                <img src="../../visuals/java.webp">
+                            </section>
+                            <p>Java Fundamentals Certificate</p>
+                        </article>
+                        <article class="certificate-card">
+                            <section>
+                                <img src="../../visuals/c++.jpeg">
+                            </section>
+                            <p>C++ Fundamentals Certificate</p>
+                        </article>
+
+                        <!-- Add other certificates similarly -->
+                    </section>
+                </section>
+            </section>
+        </section>
+     </section>
+    <script src="../scripts/sidebar.js"></script>
+</body>
+</html>

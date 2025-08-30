@@ -1,0 +1,158 @@
+/* Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+  background: #f3f2ef;
+  color: #1f2937;
+  line-height: 1.6;
+}
+
+/* Top banner */
+.profile_section {
+  width: 100%;
+  height: 220px;
+  background: #e5e7eb url('../../visuals/background.jpeg') center/100% 100% no-repeat;
+  position: relative;
+}
+
+/* Profile info container */
+.profile {
+  display: flex;
+  align-items: flex-end;
+  gap: 1rem;
+  position: absolute;
+  bottom: -60px;
+  left: 2rem;
+}
+.profile_pic {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%; /* makes it round */
+  object-fit: cover;
+  margin-right: 15px;
+}
+
+.profile h3 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.profile p {
+  font-size: 1rem;
+  color: #4b5563;
+}
+
+/* "Open to work" button */
+.open-to-work {
+  position: absolute;
+  bottom: -40px;
+  right: 2rem;
+  background: #0a66c2;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: background 0.2s ease;
+}
+
+.open-to-work:hover {
+  background: #004182;
+}
+
+/* Navigation bar (About | Skills | etc) */
+.navbar {
+  margin-top: 80px;
+  background: #fff;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.5rem 2rem;
+  display: flex;
+  gap: 2rem;
+}
+
+.navbar a {
+  text-decoration: none;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid transparent;
+  transition: 0.2s;
+}
+
+.navbar a.active,
+.navbar a:hover {
+  color: #0a66c2;
+  border-bottom: 2px solid #0a66c2;
+}
+
+/* Content layout (2-column grid) */
+.content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+/* Content cards */
+.card {
+    margin-bottom: 20px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.card h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Skills tags */
+.skills .skill {
+  display: inline-block;
+  margin: 0.3rem 0.4rem 0.3rem 0;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  background: #f9fafb;
+  color: #111;
+}
+
+/* Sidebar items */
+.sidebar .card {
+  margin-bottom: 1rem;
+}
+
+.sidebar ul {
+  list-style: none;
+}
+
+.sidebar li {
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+.sidebar li::before {
+  content: "🏷️ ";
+}
+  
+/* Responsive */
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+  }
+  .open-to-work {
+    position: static;
+    margin-top: 1rem;
+  }
+}
