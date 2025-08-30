@@ -13,4 +13,7 @@ router.get('/profile',async function(req,res){
 router.get('/learning',function(req,res){
     res.render('learningHub');
 });
+router.get('/forum',function(req,res){
+    res.render('forum.ejs');
+})
 module.exports = router;

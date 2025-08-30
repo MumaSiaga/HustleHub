@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareerConnect - Community Forum</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="../styles/forum.css">
+<link rel="stylesheet" href="../styles/nagivation.css">
+</head>
+<body>
+
+    <%- include('partials/navigation') %>
+    <section class="main_content" id="mainContent">
+        <%- include('partials/topbar') %>
+        <section class="app-container">
+            <section class="forum-section">
+                <section class="forum-header">
+                    <h1>Community Forum</h1>
+                    <button class="new-post-btn">
+                        <span class="material-symbols-outlined">add</span>
+                        <span>New Post</span>
+                    </button>
+                </section>
+
+                <!-- New Post Form -->
+                <section class="new-post-form">
+                    <input type="text" placeholder="Post title..." class="post-title-input">
+                    <textarea placeholder="Write your post here..." class="post-content-input"></textarea>
+                    <button class="submit-post-btn">Submit Post</button>
+                </section>
+
+                <section class="search-post">
+                    <input type="search" placeholder="Search for post...">
+                </section>
+
+                <!-- Posts -->
+                <section class="posts-list">
+                    <!-- <article class="post-card">
+                        <section class="post-header">
+                            <img src="../../visuals/user_profile.webp" alt="User Avatar">
+                            <section class="post-meta">
+                                <h3>Resume Tips for Data Analyst Roles</h3>
+                                <p>Posted by Sarah Miller · 2d ago</p>
+                            </section>
+                        </section>
+                        <p class="post-content">
+                            I'm looking for advice on how to tailor my resume for a data analyst position. Any tips on highlighting relevant skills and experience?
+                        </p>
+                        <section class="post-actions">
+                            <section class="action-buttons">
+                                <button class="toggle-comment-btn"><span class="material-symbols-outlined">chat_bubble_outline</span> Comment</button>
+                            </section>
+                            <span>12 replies</span>
+                        </section>
+
+                        <section class="comments">
+                            <section class="comment-list"></section>
+                            <section class="add-comment">
+                                <input type="text" placeholder="Add a comment..." class="comment-input">
+                                <button class="submit-comment-btn">Submit</button>
+                            </section>
+                        </section>
+                    </article> -->
+                </section>
+            </section>
+        </section>
+    </section>
+
+<script src="../scripts/forum.js"></script>
+<script src="../scripts/sidebar.js"></script>
+</body>
+</html>
