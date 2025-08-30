@@ -1,6 +1,10 @@
 const express=require('express');
 const path =require('path');
 const app=express();
+
+const service = require('./backend/routes/serviceRoutes');
+
+
 const port=process.env.PORT||3000;
 const session = require('express-session');
 const passport = require('passport');
