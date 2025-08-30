@@ -10,9 +10,17 @@ app.set('views', path.join(__dirname, 'public', 'views'));
 
 
 app.get('/',(req,res)=>{
-    res.render('landing');
+    res.render('employerdahsboard');
 });
+app.get('/jobs', (req, res) => res.render('jobs'));
+app.get('/services', (req, res) => res.render('services'));
+app.get('/messages', (req, res) => res.render('messages'));
+app.get('/payments', (req, res) => res.render('payments'));
+
+
 
 app.listen(port,()=>{
     console.log(`Server is running on ${port}`);
 });
+
+
