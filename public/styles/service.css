@@ -1,0 +1,206 @@
+/* Reset some default styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f6f8;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Heading Section */
+.heading {
+    text-align: center;
+    padding: 2rem 1rem;
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.heading h1 {
+    font-size: 2rem;
+    color: #222;
+    margin-bottom: 0.5rem;
+}
+
+.heading p {
+    font-size: 1rem;
+    color: #555;
+}
+
+/* Recommended Jobs Section */
+.recommended_jobs {
+    padding: 2rem 1rem;
+}
+
+.recommended_jobs > section:first-child {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.recommended_jobs > section:first-child h3 {
+    font-size: 1.5rem;
+}
+
+.recommended_jobs > section:first-child button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.recommended_jobs > section:first-child button:hover {
+    background-color: #0056b3;
+}
+
+/* Recommended jobs cards */
+.recommended {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.job {
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.job img {
+    width: 80px;
+    height: 80px;
+    background-color: #ddd;
+    margin-bottom: 1rem;
+    border-radius: 50%;
+}
+
+.job h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.job p {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.job:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Learning Hub Section */
+.learning {
+    padding: 2rem 1rem;
+}
+
+.learning_heading {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.learning_heading h3 {
+    font-size: 1.5rem;
+    color: #222;
+}
+
+/* Progress and Updates */
+.progress_updates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.progress {
+    flex: 1 1 40%;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+.progress_heading {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+#progress_title {
+    font-size: 1rem;
+    color: #007bff;
+}
+
+progress {
+    width: 100%;
+    height: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+    appearance: none;
+}
+
+progress::-webkit-progress-bar {
+    background-color: #eee;
+    border-radius: 10px;
+}
+
+progress::-webkit-progress-value {
+    background-color: #007bff;
+    border-radius: 10px;
+}
+
+.progress_heading button {
+    padding: 0.5rem;
+    border: none;
+    border-radius: 5px;
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.progress_heading button:hover {
+    background-color: #218838;
+}
+
+/* Updates Section */
+.updates {
+    flex: 1 1 25%;
+    background-color: #fff;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+}
+
+.updates p {
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .progress_updates {
+        flex-direction: column;
+    }
+    .progress, .updates {
+        flex: 1 1 100%;
+    }
+    .learning_heading {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}

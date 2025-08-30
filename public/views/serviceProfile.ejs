@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../styles/serviceProfile.css">
+    <link rel="stylesheet" href="../styles/nagivation.css">
+</head>
+<body>
+
+     <%- include('partials/navigation') %>
+    <section class="main_content" id="mainContent">
+        <%- include('partials/topbar') %>
+        <section class="profile_section">
+            <section class="profile">
+                <img src="../../visuals/profile.jpeg" class="profile_pic">
+                <section>
+                <h3>Sophia Bennett</h3>
+                <p>Software Engineer at Tech Innovators | Passionate about scalable apps</p>
+                <p>San Francisco Bay Area</p>
+                </section>
+            </section>
+        </section>
+
+        <nav class="navbar">
+        <a href="#" class="active">About</a>
+        <a href="#">Skills</a>
+        </nav>
+
+        <section class="content">
+            <section class="main">
+                <section class="card about">
+                    <h2>About</h2>
+                    <p>Highly motivated Software Engineer with 5+ years of experience...</p>
+                </section>
+
+                <section class="card skills">
+                <h2>Skills</h2>
+                <span class="skill">Java</span>
+                <span class="skill">Python</span>
+                <span class="skill">SQL</span>
+                <span class="skill">JavaScript</span>
+                </section>
+            </section>
+
+        <aside class="sidebar">
+            <section class="card">
+            <h2>Certifications</h2>
+            <ul>
+                <li>name of Certifications</li>
+                <li>name of Certifications</li>
+                <li>name of Certifications</li>
+            </ul>
+            </section>
+        </aside>
+        </section>
+
+    </section>
+    <script src="../scripts/sidebar.js"></script>
+</body>
+</html>
