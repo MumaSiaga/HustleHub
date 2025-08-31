@@ -3,6 +3,7 @@ const path =require('path');
 const app=express();
 
 const service = require('./backend/routes/serviceRoutes');
+const employerhome = require('./backend/routes/employerRoutes');
 
 
 const port=process.env.PORT||3000;
@@ -13,7 +14,7 @@ app.use('/styles', express.static(path.join(__dirname, 'public','styles')));
 app.use('/scripts', express.static(path.join(__dirname, 'public','scripts')));
 
 
-
+app.use('/employer',employerhome);
 app.use('/service',service);
 app.get('/',(req,res)=>{
     res.render('landing');

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jobs Page</title>
+<link rel="stylesheet" href="../styles/nav.css">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<style type="text/tailwindcss">
+:root {
+    --primary-color: #1173d4;
+    --secondary-color: #e0effc;
+    --background-color: #f8faff;
+    --text-primary: #1a202c;
+    --text-secondary: #5c6b8a;
+    --accent-color: #1173d4;
+}
+body { font-family: "Inter", sans-serif; background-color: var(--background-color); color: var(--text-primary);}
+</style>
+</head>
+<body>
+<%- include('partials/nav') %>
+<section class="main_content" id="mainContent">
+    <%- include('partials/bar') %>
+    <section class="p-8" id="contentSection">
+        <h1 class="text-4xl font-bold text-[var(--text-primary)] mb-8">Employer Dashboard</h1>
+
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+            <h2 class="text-3xl font-semibold text-[var(--text-primary)] mb-4 md:mb-0">Jobs</h2>
+            <button id="postNewJobBtn" class="bg-[var(--primary-color)] text-white px-6 py-2 rounded-md hover:bg-[var(--accent-color)] transition-colors duration-200">
+                Post New Job
+            </button>
+        </div>
+
+        <!-- Jobs Table and Stats -->
+        <div id="jobsContent">
+            <div class="bg-white rounded-md shadow-sm overflow-x-auto mb-8">
+                <table class="w-full text-sm text-left text-[var(--text-secondary)]">
+                    <thead class="text-xs text-[var(--text-primary)] uppercase bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3">Job Title</th>
+                            <th class="px-6 py-3">Description</th>
+                            <th class="px-6 py-3">Pay</th>
+                            <th class="px-6 py-3">Location</th>
+                            <th class="px-6 py-3">Applicants</th>
+                            <th class="px-6 py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="bg-white border-b hover:bg-gray-50"
+                            data-title="Web Developer"
+                            data-description="We are looking for an experienced Web Developer..."
+                            data-pay="50 - 70"
+                            data-currency="USD"
+                            data-location="Nairobi, Kenya"
+                            data-applicants="12"
+                        >
+                            <td class="px-6 py-4 font-medium text-[var(--text-primary)] whitespace-nowrap">Web Developer</td>
+                            <td class="px-6 py-4">Experienced Web Developer needed...</td>
+                            <td class="px-6 py-4">$50 - $70/hr</td>
+                            <td class="px-6 py-4">Nairobi, Kenya</td>
+                            <td class="px-6 py-4 text-center">12</td>
+                            <td class="px-6 py-4 flex gap-2">
+                                <button class="editJobBtn font-medium text-[var(--primary-color)] hover:underline">Edit</button>
+                                <button class="viewJobBtn font-medium text-[var(--primary-color)] hover:underline">View</button>
+                            </td>
+                        </tr>
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200">
+                    <p class="text-base font-medium text-[var(--text-secondary)]">Active Jobs</p>
+                    <p class="text-3xl font-bold text-[var(--text-primary)] mt-2">5</p>
+                </div>
+                <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200">
+                    <p class="text-base font-medium text-[var(--text-secondary)]">Applications Received</p>
+                    <p class="text-3xl font-bold text-[var(--text-primary)] mt-2">61</p>
+                </div>
+                <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200">
+                    <p class="text-base font-medium text-[var(--text-secondary)]">Total Hires</p>
+                    <p class="text-3xl font-bold text-[var(--text-primary)] mt-2">8</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Post/Edit Job Form -->
+        <div id="postJobForm" class="hidden bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+            <h1 class="text-3xl font-bold text-[var(--text-primary)] mb-8" id="formHeader">Post New Job</h1>
+            <form>
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-secondary)]" for="job-title">Job Title</label>
+                        <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] sm:text-sm" id="job-title" name="job-title" placeholder="e.g., Graphic Designer" type="text"/>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-secondary)]" for="job-description">Job Description</label>
+                        <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] sm:text-sm" id="job-description" name="job-description" placeholder="Describe the responsibilities, qualifications, and any other relevant details." rows="6"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-secondary)]" for="pay">Proposed Pay</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                </div>
+                                <input class="block w-full rounded-md border-gray-300 pl-7 pr-12 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] sm:text-sm" id="pay" name="pay" placeholder="0.00" type="text"/>
+                                <div class="absolute inset-y-0 right-0 flex items-center">
+                                    <label class="sr-only" for="currency">Currency</label>
+                                    <select class="h-full rounded-md border-transparent bg-transparent py-0 pl-2 pr-7 text-gray-500 focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] sm:text-sm" id="currency" name="currency">
+                                        <option>USD</option>
+                                        <option>CAD</option>
+                                        <option>EUR</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-[var(--text-secondary)]" for="location">Location</label>
+                            <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] sm:text-sm" id="location" name="location" placeholder="e.g., New York, NY or Remote" type="text"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-8 flex justify-between">
+                    <button type="button" id="cancelBtn" class="bg-gray-400 text-white px-6 py-3 rounded-md hover:bg-gray-500 transition-colors duration-200">Cancel</button>
+                    <button type="submit" class="bg-[var(--primary-color)] text-white px-6 py-3 rounded-md hover:bg-[var(--accent-color)] transition-colors duration-200" id="submitJobBtn">Submit Job</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Job View -->
+        <div id="viewJobSection" class="hidden max-w-4xl mx-auto">
+            <div class="flex items-center mb-6">
+                <a href="#" id="backToJobs" class="text-[var(--text-secondary)] hover:text-[var(--primary-color)] flex items-center gap-2">
+                    <!-- Left Arrow SVG -->
+                    <svg class="bi bi-arrow-left" fill="currentColor" height="20" viewBox="0 0 16 16" width="20" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z" fill-rule="evenodd"></path>
+                    </svg>
+                    Back to Jobs
+                </a>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-md mb-8" id="jobDetails">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h1 class="text-3xl font-bold text-[var(--text-primary)] mb-2" id="viewJobTitle"></h1>
+                        <div class="flex items-center text-[var(--text-secondary)] text-sm space-x-4">
+                            <div class="flex items-center gap-1">
+                                <svg class="bi bi-cash-stack" fill="currentColor" height="16" viewBox="0 0 16 16" width="16">
+                                    <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
+                                    <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"></path>
+                                </svg>
+                                <span id="viewJobPay"></span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <svg class="bi bi-geo-alt-fill" fill="currentColor" height="16" viewBox="0 0 16 16" width="16">
+                                    <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"></path>
+                                </svg>
+                                <span id="viewJobLocation"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">Open</span>
+                </div>
+                <div class="mt-6 border-t pt-6">
+                    <h2 class="text-xl font-bold text-[var(--text-primary)] mb-3">Job Description</h2>
+                    <p class="text-[var(--text-secondary)] leading-relaxed" id="viewJobDescription"></p>
+                </div>
+            </div>
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-6">Applicants (<span id="viewJobApplicants"></span>)</h2>
+                <div class="space-y-4" id="applicantsList">
+                    <!-- Applicants will go here dynamically if needed -->
+                </div>
+            </div>
+        </div>
+
+    </section>
+</section>
+
+<script>
+const postNewJobBtn = document.getElementById('postNewJobBtn');
+const jobsContent = document.getElementById('jobsContent');
+const postJobForm = document.getElementById('postJobForm');
+const formHeader = document.getElementById('formHeader');
+const cancelBtn = document.getElementById('cancelBtn');
+const submitJobBtn = document.getElementById('submitJobBtn');
+const viewJobSection = document.getElementById('viewJobSection');
+const backToJobs = document.getElementById('backToJobs');
+
+postNewJobBtn.addEventListener('click', () => {
+    jobsContent.classList.add('hidden');
+    viewJobSection.classList.add('hidden');
+    postJobForm.classList.remove('hidden');
+    formHeader.textContent = 'Post New Job';
+    document.getElementById('job-title').value = '';
+    document.getElementById('job-description').value = '';
+    document.getElementById('pay').value = '';
+    document.getElementById('currency').value = 'USD';
+    document.getElementById('location').value = '';
+    submitJobBtn.textContent = 'Submit Job';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+cancelBtn.addEventListener('click', () => {
+    postJobForm.classList.add('hidden');
+    viewJobSection.classList.add('hidden');
+    jobsContent.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+// Edit buttons
+document.querySelectorAll('.editJobBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        jobsContent.classList.add('hidden');
+        viewJobSection.classList.add('hidden');
+        postJobForm.classList.remove('hidden');
+        formHeader.textContent = 'Edit Job';
+        document.getElementById('job-title').value = row.dataset.title;
+        document.getElementById('job-description').value = row.dataset.description;
+        document.getElementById('pay').value = row.dataset.pay;
+        document.getElementById('currency').value = row.dataset.currency;
+        document.getElementById('location').value = row.dataset.location;
+        submitJobBtn.textContent = 'Update Job';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+
+// View buttons
+document.querySelectorAll('.viewJobBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const row = btn.closest('tr');
+        jobsContent.classList.add('hidden');
+        postJobForm.classList.add('hidden');
+        viewJobSection.classList.remove('hidden');
+        document.getElementById('viewJobTitle').textContent = row.dataset.title;
+        document.getElementById('viewJobDescription').textContent = row.dataset.description;
+        document.getElementById('viewJobPay').textContent = row.dataset.pay + ' / hour';
+        document.getElementById('viewJobLocation').textContent = row.dataset.location;
+        document.getElementById('viewJobApplicants').textContent = row.dataset.applicants;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+});
+
+// Back to Jobs
+backToJobs.addEventListener('click', (e) => {
+    e.preventDefault();
+    viewJobSection.classList.add('hidden');
+    postJobForm.classList.add('hidden');
+    jobsContent.classList.remove('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+
+<script src="../scripts/bar.js"></script>
+</body>
+</html>
