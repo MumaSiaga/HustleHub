@@ -3,6 +3,7 @@ const path =require('path');
 const app=express();
 
 const service = require('./backend/routes/serviceRoutes');
+const employerhome = require('./backend/routes/employerRoutes');
 
 
 const port=process.env.PORT||3000;
@@ -12,6 +13,7 @@ require('dotenv').config();
 require('./config/auth');
 require('./config/db');
 
+app.use('/employer', employerhome);
 app.use(express.static("public"));
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'public', 'views'));
