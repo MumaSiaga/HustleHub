@@ -12,5 +12,8 @@ router.get('/learning',function(req,res){
 });
 router.get('/forum',function(req,res){
     res.render('forum.ejs');
-})
+});
+router.get('/feed',function(req,res){
+    res.render('JobFeed');
+});
 module.exports = router;
