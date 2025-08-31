@@ -12,7 +12,7 @@
     left: 0;
     width: 240px;
     height: calc(100vh - 60px);
-    background: #153291;
+    background: #191C27;
     color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -46,7 +46,7 @@
 }
 
 .dashboard a:hover {
-    background: #ff8800fb;
+    background: #0088fffb;
     color: #ffffff;
     transform: translateX(4px);
 }
@@ -113,10 +113,10 @@
 .logo .icon1 {
   width: 28px;
   height: 28px;
-  color: #ff8800fb;
+  color: #0088fffb;
 }
 
-.heading {
+.headingT {
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0;

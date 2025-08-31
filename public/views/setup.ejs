@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Choose Your Role</title>
+  <link rel="stylesheet" href="/styles/roles.css">
+</head>
+<body>
+  <main class="role-page">
+    <header>
+      <h1>Welcome to Hustlehub</h1>
+      <p>Select your role to get started:</p>
+    </header>
+
+    <section class="roles-container">
+      <article class="role-card" id="freelancer">
+        <figure>
+          <img src="../images/hireme.webp" alt="Freelancer">
+          <figcaption>Freelancer</figcaption>
+        </figure>
+        <p>Offer your skills, find local gigs, and grow your profile.</p>
+        <form action="/setup" method="post">
+          <input type="hidden" name="role" value="freelancer">
+          <button type="submit">Choose Freelancer</button>
+        </form>
+      </article>
+
+      <article class="role-card" id="client">
+        <figure>
+          <img src="../images/hiring.jpg" alt="Client">
+          <figcaption>Client</figcaption>
+        </figure>
+        <p>Post jobs, find skilled freelancers nearby, and hire with confidence.</p>
+        <form action="/setup" method="post">
+          <input type="hidden" name="role" value="client">
+          <button type="submit">Choose Client</button>
+        </form>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
