@@ -18,6 +18,11 @@ const JobSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  contact: {
+    type: String, // store as string to allow '+' and '-' if needed
+    required: true,
+    trim: true
+  },
   createdAt: {
     type: Date,
     default: Date.now

@@ -42,6 +42,7 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                             <th class="px-6 py-3">Description</th>
                             <th class="px-6 py-3">Pay</th>
                             <th class="px-6 py-3">Location</th>
+                            <th class="px-6 py-3">Contact/WhatsApp</th>
                             <th class="px-6 py-3">Actions</th>
                         </tr>
                     </thead>
@@ -54,11 +55,13 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                                     data-description="<%= job.description %>"
                                     data-pay="<%= job.salary %>"
                                     data-location="<%= job.location %>"
+                                    data-contact="<%= job.contact %>"
                                 >
                                     <td class="px-6 py-4 font-medium text-[var(--text-primary)] whitespace-nowrap"><%= job.title %></td>
                                     <td class="px-6 py-4"><%= job.description.substring(0,50) %>...</td>
                                     <td class="px-6 py-4">$<%= job.salary %></td>
                                     <td class="px-6 py-4"><%= job.location %></td>
+                                    <td class="px-6 py-4"><%= job.contact %></td>
                                     <td class="px-6 py-4 flex gap-2">
                                         <button class="editJobBtn font-medium text-[var(--primary-color)] hover:underline">Edit</button>
                                         <button class="viewJobBtn font-medium text-[var(--primary-color)] hover:underline">View</button>
@@ -70,7 +73,7 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                             <% }) %>
                         <% } else { %>
                             <tr>
-                                <td colspan="5" class="px-6 py-4 text-center text-gray-500">No jobs posted yet.</td>
+                                <td colspan="6" class="px-6 py-4 text-center text-gray-500">No jobs posted yet.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -106,6 +109,11 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                                 id="location" name="location" placeholder="e.g., Remote or Nairobi" type="text" required/>
                         </div>
                     </div>
+                    <div>
+                        <label class="block text-sm font-medium text-[var(--text-secondary)]" for="contact">Contact/WhatsApp</label>
+                        <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] sm:text-sm" 
+                            id="contact" name="contact" placeholder="e.g., +254712345678" type="text" required/>
+                    </div>
                 </div>
                 <div class="mt-8 flex justify-between">
                     <button type="button" id="cancelBtn" class="bg-gray-400 text-white px-6 py-3 rounded-md hover:bg-gray-500 transition-colors duration-200">Cancel</button>
@@ -122,6 +130,7 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                 <p><strong>Description:</strong> <span id="viewJobDescription"></span></p>
                 <p><strong>Pay:</strong> $<span id="viewJobSalary"></span></p>
                 <p><strong>Location:</strong> <span id="viewJobLocation"></span></p>
+                <p><strong>Contact:</strong> <span id="viewJobContact"></span></p>
 
                 <h2 class="text-2xl font-semibold mt-6 mb-2 text-[var(--text-primary)]">Applicants (dummy data)</h2>
                 <table class="w-full text-left text-sm text-[var(--text-secondary)]">
@@ -175,6 +184,7 @@ document.querySelectorAll('.editJobBtn').forEach(btn => {
         const description = row.dataset.description;
         const salary = row.dataset.pay;
         const location = row.dataset.location;
+        const contact = row.dataset.contact;
 
         document.getElementById('formHeader').innerText = 'Edit Job';
         document.getElementById('jobId').value = id;
@@ -182,6 +192,7 @@ document.querySelectorAll('.editJobBtn').forEach(btn => {
         document.getElementById('description').value = description;
         document.getElementById('salary').value = salary;
         document.getElementById('location').value = location;
+        document.getElementById('contact').value = contact;
 
         jobsContent.classList.add('hidden');
         postJobForm.classList.remove('hidden');
@@ -197,6 +208,7 @@ document.querySelectorAll('.viewJobBtn').forEach(btn => {
         document.getElementById('viewJobDescription').innerText = row.dataset.description;
         document.getElementById('viewJobSalary').innerText = row.dataset.pay;
         document.getElementById('viewJobLocation').innerText = row.dataset.location;
+        document.getElementById('viewJobContact').innerText = row.dataset.contact;
 
         document.getElementById('viewJobModal').classList.remove('hidden');
         window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -1,12 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const Job = require("../model/Job");
+const User=require('../model/User');
+const ForumPost = require('../model/forum');
 
 // Employer Home
-router.get('/home', (req, res) => {
-    res.render('employerhome');  
-});
+router.get('/home', async (req, res) => {
+    try {
+        // Fetch all jobs
+        const jobs = await Job.find();
 
+        // Render employerhome.ejs and pass jobs
+        res.render('employerhome', { jobs });
+    } catch (error) {
+        console.error("❌ Error loading employer home:", error);
+        res.render('employerhome', { jobs: [] }); // fallback
+    }
+});
 
 
 // Messages Page
@@ -24,22 +34,18 @@ router.get('/payments', (req, res) => {
     res.render('payments'); // this will render payments.ejs
 });
 
-//Community forum page
-router.get('/forum', (req, res) => {
-    res.render('employer_forum'); // this will render forum.ejs
-});
 
 // POST a new job or update existing job
 router.post("/jobs", async (req, res) => {
   try {
-    const { id, title, description, location, salary } = req.body;
+    const { id, title, description, location, salary, contact } = req.body;
 
     if (id) {
       // Update existing job
-      await Job.findByIdAndUpdate(id, { title, description, location, salary });
+      await Job.findByIdAndUpdate(id, { title, description, location, salary, contact });
     } else {
       // Create new job
-      const job = new Job({ title, description, location, salary });
+      const job = new Job({ title, description, location, salary, contact });
       await job.save();
     }
 
@@ -92,6 +98,57 @@ router.post("/jobs/delete/:id", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error deleting job");
+  }
+});
+
+
+
+// Forum page
+router.get('/forum', async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    // Fetch posts with post author and comment authors populated
+    const posts = await ForumPost.find({})
+      .sort({ createdAt: -1 })
+      .populate('author', 'username')            // post author
+      .populate('comments.author', 'username');  // comment authors
+
+    res.render('employer_forum', { user, posts });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+// Add new post
+router.post('/forum/post', async (req, res) => {
+  try {
+    const { title, content } = req.body;
+    const post = new ForumPost({
+      title,
+      content,
+      author: req.user._id
+    });
+    await post.save();
+    res.redirect('/employer/forum');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+});
+
+// Add comment
+router.post('/forum/comment/:postId', async (req, res) => {
+  try {
+    const { content } = req.body;
+    const post = await ForumPost.findById(req.params.postId);
+    post.comments.push({ content, author: req.user._id });
+    await post.save();
+    res.redirect('/employer/forum');  // Redirect to correct route
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
   }
 });
 
