@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CareerConnect - Quiz</title>
+  <link rel="stylesheet" href="/styles/quiz.css"/>
+  <link rel="stylesheet" href="/styles/nagivation.css"/>
+  <style>
+    .progress-fill {
+      transition: width 0.3s ease-in-out;
+    }
+    .result-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .result-modal.active {
+      display: flex;
+      opacity: 1;
+    }
+    .result-content {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
+      animation: scaleIn 0.3s ease;
+    }
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to   { transform: scale(1); opacity: 1; }
+    }
+    .option.selected {
+      background-color: #d0f0fd;
+    }
+  </style>
+</head>
+<body>
+  <%- include('partials/navigation') %>
+  <section class="main_content" id="mainContent">
+    <%- include('partials/topbar') %>
+    
+    <div class="quiz-container">
+      <div class="quiz-header">
+        <p class="course-title"><%= course.title %></p>
+        <h1 class="quiz-title"><%= quiz.title %></h1>
+        <div class="quiz-info">
+          <span>Questions: <%= quiz.questions.length %></span>
+          <span>Passing Score: <%= quiz.passingScore %>%</span>
+          <span>Time Limit: <%= quiz.timeLimit %> min</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <div class="timer" id="timer">Time remaining: <%= quiz.timeLimit %>:00</div>
+      </div>
+
+      <form id="quizForm">
+        <% quiz.questions.forEach((question, index) => { %>
+          <div class="question-container">
+            <div class="question-number">Question <%= index + 1 %></div>
+            <div class="question-text"><%= question.question %></div>
+            <div class="options-container">
+              <% question.options.forEach((option, optionIndex) => { %>
+                <label class="option" onclick="selectOption(this, <%= index %>, <%= optionIndex %>)">
+                  <input type="radio" name="q<%= index %>" value="<%= optionIndex %>" required/>
+                  <%= option %>
+                </label>
+              <% }); %>
+            </div>
+          </div>
+        <% }); %>
+
+        <div class="quiz-actions">
+          <a href="/service/learning" class="btn btn-secondary">← Back to Learning Hub</a>
+          <button type="submit" class="btn btn-primary" id="submitBtn">Submit Quiz</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Result Modal -->
+  <div class="result-modal" id="resultModal">
+    <div class="result-content">
+      <div class="result-icon" id="resultIcon">🎉</div>
+      <h2 class="result-title" id="resultTitle">Quiz Completed!</h2>
+      <div class="result-score" id="resultScore">0%</div>
+      <p class="result-message" id="resultMessage">Processing your results...</p>
+      <div id="resultActions">
+        <a href="/service/learning" class="btn btn-primary">Back to Learning Hub</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="../scripts/sidebar.js"></script>
+  <script>
+    let timeLeft = <%= quiz.timeLimit * 60 %>;
+    let selectedAnswers = {};
+    let timerInterval;
+
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        document.getElementById("timer").textContent =
+          `Time remaining: ${minutes}:${seconds.toString().padStart(2, "0")}`;
+        if (timeLeft <= 0) {
+          clearInterval(timerInterval);
+          submitQuiz();
+        }
+      }, 1000);
+    }
+
+    function selectOption(element, questionIndex, optionIndex) {
+      const container = element.closest(".question-container");
+      container.querySelectorAll(".option").forEach(opt => opt.classList.remove("selected"));
+      element.classList.add("selected");
+      selectedAnswers[questionIndex] = optionIndex;
+
+      const progress = (Object.keys(selectedAnswers).length / <%= quiz.questions.length %>) * 100;
+      document.getElementById("progressFill").style.width = progress + "%";
+    }
+
+    function calculateScore() {
+      let correctCount = 0;
+      const total = <%= quiz.questions.length %>;
+      <% quiz.questions.forEach((q, i) => { %>
+        if (selectedAnswers[<%= i %>] === <%= q.correctAnswer %>) correctCount++;
+      <% }); %>
+      const score = Math.round((correctCount / total) * 100);
+      const passed = score >= <%= quiz.passingScore %>;
+      return { score, passed };
+    }
+
+    async function submitQuiz() {
+      clearInterval(timerInterval);
+      const totalQuestions = <%= quiz.questions.length %>;
+      if (Object.keys(selectedAnswers).length < totalQuestions) {
+        alert(`Please answer all questions. You have answered ${Object.keys(selectedAnswers).length} out of ${totalQuestions}.`);
+        return;
+      }
+      const submitBtn = document.getElementById("submitBtn");
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+
+      try {
+        // If server calculation needed, use fetch. Otherwise, calculate client-side:
+        const result = calculateScore();
+        showResult(result);
+      } catch (err) {
+        console.error(err);
+        alert("Error submitting quiz.");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Quiz";
+      }
+    }
+
+    function showResult(result) {
+      const modal = document.getElementById("resultModal");
+      const icon = document.getElementById("resultIcon");
+      const title = document.getElementById("resultTitle");
+      const scoreEl = document.getElementById("resultScore");
+      const message = document.getElementById("resultMessage");
+      const actions = document.getElementById("resultActions");
+
+      scoreEl.textContent = result.score + "%";
+
+      if (result.passed) {
+        icon.textContent = "🎉";
+        title.textContent = "Congratulations!";
+        message.textContent = `You passed the quiz with ${result.score}%! Your certificate has been added to your profile.`;
+        actions.innerHTML = `<a href="/service/learning" class="btn btn-primary">Back to Learning Hub</a>`;
+      } else {
+        icon.textContent = "😔";
+        title.textContent = "Quiz Failed";
+        message.textContent = `You scored ${result.score}%. You need <%= quiz.passingScore %>% to pass. You can retake the quiz.`;
+        actions.innerHTML = `
+          <a href="/service/quiz/<%= course._id %>" class="btn btn-primary">Retake Quiz</a>
+          <a href="/service/learning" class="btn btn-secondary">Back to Learning Hub</a>
+        `;
+      }
+
+      modal.classList.add("active");
+    }
+
+    document.getElementById("resultModal").addEventListener("click", (e) => {
+      if (e.target.id === "resultModal") {
+        e.target.classList.remove("active");
+      }
+    });
+
+    document.getElementById("quizForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitQuiz();
+    });
+
+    startTimer();
+  </script>
+</body>
+</html>
