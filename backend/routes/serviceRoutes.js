@@ -11,9 +11,13 @@ router.get('/learning',function(req,res){
     res.render('learningHub');
 });
 router.get('/forum',function(req,res){
-    res.render('forum.ejs');
+    res.render('forum.');
 });
 router.get('/feed',function(req,res){
     res.render('JobFeed');
 });
+router.get('/map',function(req,res){
+    const MAP_KEY=process.env.MAP_KEY;
+    res.render('map',{MAP_KEY});
+})
 module.exports = router;

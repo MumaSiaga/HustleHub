@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Map - Google</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    #map {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <!-- Load Google Maps JavaScript API -->
+  <script async defer 
+    src="https://maps.googleapis.com/maps/api/js?key=<%=MAP_KEY%>&callback=initMap">
+  </script>
+
+  <script>
+    let map;
+
+    function initMap() {
+      // Create map centered on the world first
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 0, lng: 0 },
+        zoom: 2,
+      });
+
+      // Try browser geolocation
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const userPos = {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude,
+            };
+
+            // Center map on user
+            map.setCenter(userPos);
+            map.setZoom(14);
+
+            // Add marker for user
+            new google.maps.Marker({
+              position: userPos,
+              map,
+              title: "You are here",
+            });
+
+            // Example job marker (Johannesburg)
+            const jobPos = { lat: -26.2041, lng: 28.0473 };
+            new google.maps.Marker({
+              position: jobPos,
+              map,
+              title: "Plumber Job",
+            });
+
+          },
+          () => {
+            handleLocationError(true, map.getCenter());
+          }
+        );
+      } else {
+        // Browser doesn’t support geolocation
+        handleLocationError(false, map.getCenter());
+      }
+    }
+
+    function handleLocationError(browserHasGeolocation, pos) {
+      alert(
+        browserHasGeolocation
+          ? "Error: The Geolocation service failed."
+          : "Error: Your browser doesn’t support geolocation."
+      );
+    }
+  </script>
+</body>
+</html>
