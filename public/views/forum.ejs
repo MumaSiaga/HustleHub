@@ -1,49 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CareerConnect - Community Forum</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../styles/forum.css">
-<link rel="stylesheet" href="../styles/nagivation.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CareerConnect - Community Forum</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="stylesheet" href="../styles/forum.css">
+  <link rel="stylesheet" href="../styles/nagivation.css">
 </head>
 <body>
 
-    <%- include('partials/navigation') %>
-    <section class="main_content" id="mainContent">
-        <%- include('partials/topbar') %>
-        <section class="app-container">
-            <section class="forum-section">
-                <section class="forum-header">
-                    <h1>Community Forum</h1>
-                    <button class="new-post-btn">
-                        <span class="material-symbols-outlined">add</span>
-                        <span>New Post</span>
-                    </button>
-                </section>
+  <%- include('partials/navigation') %>
 
-                <!-- New Post Form -->
-                <section class="new-post-form">
-                    <input type="text" placeholder="Post title..." class="post-title-input">
-                    <textarea placeholder="Write your post here..." class="post-content-input"></textarea>
-                    <button class="submit-post-btn">Submit Post</button>
-                </section>
+  <section class="main_content" id="mainContent">
+    <%- include('partials/topbar') %>
 
-                <section class="search-post">
-                    <input type="search" placeholder="Search for post...">
-                </section>
-
-                <!-- Posts -->
-                <section class="posts-list">
-                    
-                </section>
-            </section>
+    <section class="app-container">
+      <section class="forum-section">
+        <section class="forum-header">
+          <h1>Community Forum</h1>
+          <button class="new-post-btn">
+            <span class="material-symbols-outlined">add</span>
+            <span>New Post</span>
+          </button>
         </section>
-    </section>
 
-<script src="../scripts/forum.js"></script>
-<script src="../scripts/sidebar.js"></script>
+        <!-- New Post Form (hidden by default) -->
+        <section class="new-post-form" style="display:none;">
+          <form action="/service/forum/post" method="POST">
+            <input type="text" name="title" placeholder="Post title..." required>
+            <textarea name="content" placeholder="Write your post here..." required></textarea>
+            <button type="submit">Submit Post</button>
+          </form>
+        </section>
+
+        <!-- Posts -->
+        <section class="posts-list">
+          <% if (posts.length === 0) { %>
+            <p>No posts yet.</p>
+          <% } else { %>
+            <% posts.forEach(post => { %>
+              <article class="post-card">
+                <section class="post-header">
+                  <strong><%= post.author.username %></strong>
+                  <span> · <%= post.createdAt.toDateString() %></span>
+                </section>
+
+                <h3><%= post.title %></h3>
+                <p><%= post.content %></p>
+
+                <!-- Comments -->
+                <section class="comments">
+                  <% post.comments.forEach(comment => { %>
+                    <div class="comment">
+                      <strong><%= comment.author.username %>:</strong> <%= comment.content %>
+                    </div>
+                  <% }) %>
+
+                  <!-- Add comment -->
+                  <form action="/service/forum/comment/<%= post._id %>" method="POST">
+                    <input type="text" name="content" placeholder="Add a comment..." required>
+                    <button type="submit">Submit</button>
+                  </form>
+                </section>
+              </article>
+            <% }) %>
+          <% } %>
+        </section>
+      </section>
+    </section>
+  </section>
+
+  <script src="../scripts/sidebar.js"></script>
+  <script>
+    // Toggle New Post Form
+    document.addEventListener("DOMContentLoaded", () => {
+      const newPostBtn = document.querySelector(".new-post-btn");
+      const newPostForm = document.querySelector(".new-post-form");
+
+      newPostBtn.addEventListener("click", () => {
+        newPostForm.style.display = newPostForm.style.display === "flex" ? "none" : "flex";
+        if(newPostForm.style.display === "flex") newPostForm.style.flexDirection = "column";
+      });
+    });
+  </script>
 </body>
 </html>
