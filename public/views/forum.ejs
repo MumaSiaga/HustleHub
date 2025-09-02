@@ -6,44 +6,211 @@
 <title>CareerConnect - Community Forum</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&family=Work+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
-<link rel="stylesheet" href="../styles/forum.css">
 <link rel="stylesheet" href="../styles/nagivation.css">
+<style>
+  body {
+    font-family: 'Noto Sans', sans-serif;
+    margin:0; padding:0;
+    background: #f9f9f9;
+    color: #333;
+  }
+
+  .main_content {
+    padding: 1rem;
+    margin-top: 60px;
+  }
+
+  .forum-section {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .forum-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .forum-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .new-post-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: #0088ff;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .new-post-form {
+    display: none;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    gap: 5px;
+  }
+
+  .new-post-form input, .new-post-form textarea {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .new-post-form button {
+    align-self: flex-end;
+    padding: 6px 12px;
+    background: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  .post-card {
+    background: #fff;
+    padding: 12px 16px;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .post-header strong {
+    font-weight: 600;
+  }
+
+  .post-card h3 {
+    margin: 5px 0;
+  }
+
+  .post-card p {
+    margin: 5px 0 10px 0;
+  }
+
+  .comments {
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+    margin-top: 10px;
+  }
+
+  .comment {
+    padding: 5px 0;
+    font-size: 0.95rem;
+  }
+
+  .comment strong {
+    margin-right: 5px;
+  }
+
+  .comment-form {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  .comment-form input {
+    flex: 1;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  .comment-form button {
+    padding: 6px 12px;
+    background: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
 
-    <%- include('partials/navigation') %>
-    <section class="main_content" id="mainContent">
-        <%- include('partials/topbar') %>
-        <section class="app-container">
-            <section class="forum-section">
-                <section class="forum-header">
-                    <h1>Community Forum</h1>
-                    <button class="new-post-btn">
-                        <span class="material-symbols-outlined">add</span>
-                        <span>New Post</span>
-                    </button>
-                </section>
+<%- include('partials/navigation') %>
 
-                <!-- New Post Form -->
-                <section class="new-post-form">
-                    <input type="text" placeholder="Post title..." class="post-title-input">
-                    <textarea placeholder="Write your post here..." class="post-content-input"></textarea>
-                    <button class="submit-post-btn">Submit Post</button>
-                </section>
+<section class="main_content" id="mainContent">
+<%- include('partials/topbar') %>
 
-                <section class="search-post">
-                    <input type="search" placeholder="Search for post...">
-                </section>
+<section class="forum-section">
+  <section class="forum-header">
+    <h1>Community Forum</h1>
+    <button class="new-post-btn">
+      <span class="material-symbols-outlined">add</span>
+      <span>New Post</span>
+    </button>
+  </section>
 
-                <!-- Posts -->
-                <section class="posts-list">
-                    
-                </section>
-            </section>
-        </section>
-    </section>
+  <!-- New Post Form -->
+  <section class="new-post-form">
+    <form action="/service/forum/post" method="POST">
+      <input type="text" name="title" placeholder="Post title..." required>
+      <textarea name="content" placeholder="Write your post here..." required></textarea>
+      <button type="submit">Submit Post</button>
+    </form>
+  </section>
 
-<script src="../scripts/forum.js"></script>
+  <!-- Posts -->
+  <section class="posts-list">
+    <% if (!posts || posts.length === 0) { %>
+      <p>No posts yet.</p>
+    <% } else { %>
+      <% posts.forEach(post => { %>
+        <article class="post-card">
+          <section class="post-header">
+            <strong><%= post.author.username %></strong>
+            <span> · <%= post.createdAt.toDateString() %></span>
+          </section>
+
+          <h3><%= post.title %></h3>
+          <p><%= post.content %></p>
+
+          <!-- Comments -->
+          <section class="comments">
+            <% post.comments.forEach(comment => { %>
+              <div class="comment">
+                <strong><%= comment.author.username %>:</strong> <%= comment.content %>
+              </div>
+            <% }) %>
+
+            <!-- Add comment -->
+            <form class="comment-form" action="/service/forum/comment/<%= post._id %>" method="POST">
+              <input type="text" name="content" placeholder="Add a comment..." required>
+              <button type="submit">Submit</button>
+            </form>
+          </section>
+        </article>
+      <% }) %>
+    <% } %>
+  </section>
+</section>
+</section>
+
 <script src="../scripts/sidebar.js"></script>
+<script>
+  // Toggle New Post Form
+  document.addEventListener("DOMContentLoaded", () => {
+    const newPostBtn = document.querySelector(".new-post-btn");
+    const newPostForm = document.querySelector(".new-post-form");
+
+    newPostBtn.addEventListener("click", () => {
+      newPostForm.style.display = newPostForm.style.display === "flex" ? "none" : "flex";
+      if(newPostForm.style.display === "flex") newPostForm.style.flexDirection = "column";
+    });
+  });
+</script>
+
 </body>
 </html>

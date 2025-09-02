@@ -40,7 +40,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200 card-hover">
                     <p class="text-base font-medium text-[var(--text-secondary)]">Active Jobs</p>
-                    <p class="text-3xl font-bold text-[var(--text-primary)] mt-2">5</p>
+                    <p class="text-3xl font-bold text-[var(--text-primary)] mt-2"><%= jobs ? jobs.length : 0 %></p>
                 </div>
                 <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200 card-hover">
                     <p class="text-base font-medium text-[var(--text-secondary)]">Applications Received</p>
@@ -61,7 +61,6 @@
                             Post a Job
                         </button>
                     </a>
-                  
                 </div>
             </div>
 
