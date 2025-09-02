@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Management</title>
+    <link rel="stylesheet" href="../styles/nav.css">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <style type="text/tailwindcss">
+        :root {
+            --primary-color: #1173d4;
+            --secondary-color: #e0effc;
+            --background-color: #f8faff;
+            --text-primary: #1a202c;
+            --text-secondary: #5c6b8a;
+        }
+        body {
+            font-family: "Inter", sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Main navigation partial -->
+    <%- include('partials/nav') %>
+
+    <!-- Main content section -->
+    <section class="main_content" id="mainContent">
+        <!-- Sidebar / top bar partial -->
+        <%- include('partials/bar') %>
+
+        <!-- Payment section starts here -->
+        <section class="flex flex-col min-h-screen bg-[var(--background-color)]">
+            <main class="flex-1 p-8 w-full">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center mb-8 gap-4">
+                    <h1 class="text-3xl font-bold text-[var(--text-primary)]">Payment Management</h1>
+                    <div class="flex items-center gap-4">
+                        <span class="text-sm text-[var(--text-secondary)]">Payment for:</span>
+                        <span class="font-semibold text-[var(--text-primary)]">Web Developer - John Doe</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                    <!-- Payment Details -->
+                    <div class="md:col-span-2 w-full">
+                        <div class="bg-white p-8 rounded-lg shadow-md w-full">
+                            <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-6">Payment Details</h2>
+                            <div class="space-y-6">
+                                <!-- Select Payment Method -->
+                                <div>
+                                    <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-4">Select Payment Method</h3>
+                                    <div class="space-y-4">
+                                        <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                            <input checked class="form-radio text-[var(--primary-color)]" name="payment-method" type="radio"/>
+                                            <div class="ml-4 flex-grow">
+                                                <p class="font-semibold">Visa ending in 1234</p>
+                                                <p class="text-sm text-[var(--text-secondary)]">Expires 12/2025</p>
+                                            </div>
+                                            <img class="h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxTfOu9yYdCKwgea2vMCQusKQTxNaOp_Imlq1L15GnzI4e7D7hu0dVmydNEYMz-3YD4MfP1bjfA2u0YLaDesvhaSIsPGED0X1OfC98Ch-D9oXUS4mXwExit8kcd0mg7yL4L5rm6onoT5G2Ove1fWfvNpy2yu7t4-ljOIBix_cnWdWI-mT3ZI1o9azLhBdc9zGDnLm2SkSXITdjIG84Y1-JidDFJGYQkIjmyB37GbOs_1NkDoeagm-NHq26evASkls00s_HCSWT3b0C" alt="Visa"/>
+                                        </label>
+                                        <label class="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                            <input class="form-radio text-[var(--primary-color)]" name="payment-method" type="radio"/>
+                                            <div class="ml-4 flex-grow">
+                                                <p class="font-semibold">Mastercard ending in 5678</p>
+                                                <p class="text-sm text-[var(--text-secondary)]">Expires 08/2026</p>
+                                            </div>
+                                            <img class="h-6" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_TqC9vpasD4-l3IWrK6IkokkuAAcdU1usVcdhB0B6rFoeSZ-_15gD5tvAH9JODF3XCvmLePJnAPaZ79lZCGZw-BRPakFvqPozLoKvTrpirBv5_n5erwog-SpmFYBXF2KSshyx2asSVzfaXy2IqgCrfou1cxQSWz9Ij5TslSFXx9SjOK_cSrhfzknlpWfLodzHLzNjJPCY4NvYuqrjOxYyn1FObEZHV12qWl3vD7PEHWtCGVlDfNkmmx7KVynAwXaNDXYgsGp4YOoj" alt="Mastercard"/>
+                                        </label>
+                                    </div>
+                                    <button class="text-[var(--primary-color)] font-semibold mt-4 text-sm flex items-center gap-2 hover:underline">
+                                        Add New Payment Method
+                                    </button>
+                                </div>
+
+                                <!-- Add new card -->
+                                <div class="border-t pt-6">
+                                    <h3 class="text-lg font-semibold text-[var(--text-primary)] mb-4">Or Add New Card</h3>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-[var(--text-secondary)]" for="card-number">Card Number</label>
+                                            <input class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] sm:text-sm" id="card-number" placeholder="0000 0000 0000 0000" type="text"/>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-[var(--text-secondary)]" for="expiry-date">Expiry Date</label>
+                                                <input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] sm:text-sm" id="expiry-date" placeholder="MM/YY" type="text"/>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-[var(--text-secondary)]" for="cvc">CVC</label>
+                                                <input class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-[var(--primary-color)] focus:border-[var(--primary-color)] sm:text-sm" id="cvc" placeholder="123" type="text"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Summary -->
+                    <div class="md:col-span-1 w-full">
+                        <div class="bg-white p-8 rounded-lg shadow-md sticky top-8">
+                            <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-6">Order Summary</h2>
+                            <div class="space-y-4">
+                                <div class="flex justify-between">
+                                    <span class="text-[var(--text-secondary)]">Hourly Rate:</span>
+                                    <span class="font-semibold">$60.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-[var(--text-secondary)]">Hours Worked:</span>
+                                    <span class="font-semibold">40</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-[var(--text-secondary)]">Subtotal:</span>
+                                    <span class="font-semibold">$2400.00</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-[var(--text-secondary)]">Platform Fee (5%):</span>
+                                    <span class="font-semibold">$120.00</span>
+                                </div>
+                                <div class="border-t my-4"></div>
+                                <div class="flex justify-between text-xl font-bold">
+                                    <span class="text-[var(--text-primary)]">Total:</span>
+                                    <span class="text-[var(--primary-color)]">$2520.00</span>
+                                </div>
+                            </div>
+                            <div class="mt-8">
+                                <button class="w-full bg-[var(--primary-color)] text-white px-6 py-3 rounded-md hover:bg-blue-700 flex items-center justify-center gap-2">
+                                    Pay Now
+                                </button>
+                                <p class="text-xs text-[var(--text-secondary)] mt-4 text-center">
+                                    Secure payment powered by Stripe
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </section>
+        <!-- Payment section ends here -->
+    </section>
+
+    <script src="../scripts/bar.js"></script>
+</body>
+</html>

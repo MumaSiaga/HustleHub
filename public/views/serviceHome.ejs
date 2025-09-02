@@ -9,12 +9,15 @@
 </head>
 <body>
      <%- include('partials/navigation') %>
-
+    
     <section class="main_content" id="mainContent">
         <%- include('partials/topbar') %>
         <section class="heading">
-            <h1>Welcome back, Sarah!</h1>
+            <h1><%= user.username %></h1>
             <p>Here's what is happening today</p>
+            <form class="logoutbtn" action="/logout" method="POST">
+                <button type="submit">Logout</button>
+            </form>
         </section>
         <section class="recommended_jobs">
             <section>
