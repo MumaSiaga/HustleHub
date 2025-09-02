@@ -210,24 +210,45 @@ a {
     object-fit: cover;
     border-radius: 10px;
 }
-.start_course {
-    display: inline-flex;       /* use inline-flex for button sizing */
-    flex-direction: row;        /* ensures items go in a row */
-    align-items: center;        
-    justify-content: center;   
-    white-space: nowrap;        
-    padding: 10px 20px;
-    background-color: #2563eb;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.3s;
+
+.course-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
 }
 
-.start_course:hover {
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    font-size: 0.85rem;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: #fff;
+}
+
+.btn-primary:hover {
     background-color: #1d4ed8;
+}
+
+.btn-success {
+    background-color: #059669;
+    color: #fff;
+}
+
+.btn-success:hover {
+    background-color: #047857;
 }
 
 /* --- Certificates --- */

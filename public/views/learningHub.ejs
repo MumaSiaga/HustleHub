@@ -27,95 +27,31 @@
                 <section class="featured-courses">
                     <h3>Featured Courses</h3>
                     <section class="course-grid">
-                        <article class="course-card">
-                            <section>
-                                <img src="../../visuals/painter.jpeg">
-                            </section>
-                            <section class="course-info">
-                                <h4>Reparing</h4>
-                                <p>Learn to repare home appliances.</p>
-                                <span>1h 30min</span>
-                            </section>
-                        </article>
-                        <article class="course-card">
-                            <section>
-                                <img src="../../visuals/plumbing.jpeg">
-                            </section>
-                            <section class="course-info">
-                                <h4>Plumbing</h4>
-                                <p>Learn to plumb to make your living</p>
-                                <span>1h 30min</span>
-                            </section>
-                        </article>
-                        <article class="course-card">
-                            <section>
-                                <img src="../../visuals/python.png">
-                            </section>
-                            <section class="course-info">
-                                <h4>Software Development Fundamentals</h4>
-                                <p>Learn the basics of coding and software development.</p>
-                                <span>1h 30min</span>
-                            </section>
-                        </article>
+                        <% if (courses && courses.length > 0) { %>
+                            <% courses.forEach(course => { %>
+                                <article class="course-card">
+                                    <section>
+                                        <img src="../../visuals/<%= course.image %>" alt="<%= course.title %>">
+                                    </section>
+                                    <section class="course-info">
+                                        <h4><%= course.title %></h4>
+                                        <p><%= course.description %></p>
+                                        <span><%= course.duration %></span>
+                                    </section>
+                                    <section class="course-actions">
+                                        <a href="<%= course.courseLink %>" target="_blank" class="btn btn-primary">📚 Course Link</a>
+                                        <a href="/service/quiz/<%= course._id %>" class="btn btn-success">🧠 Take Quiz</a>
+                                    </section>
+                                </article>
+                            <% }); %>
+                        <% } else { %>
+                            <p>No courses available at the moment.</p>
+                        <% } %>
                     </section>
                 </section>
 
-                <section class="course-catalog">
-                    <h3>Course Catalog</h3>
-                    <nav class="catalog-tabs">
-                        <a href="#" class="active">All Courses</a>
-                        <a href="#">IT & Technology</a>
-                        <a href="#">Healthcare</a>
-                        <a href="#">Trades</a>
-                    </nav>
-                    <section class="catalog-list">
-                        <article class="catalog-item">
-                            <section class="item-info">
-                                <h4>Introduction to Python Programming</h4>
-                                <p>Learn the basics of Python, a versatile programming language used in web development, data analysis, and more.</p>
-                                <span>2h 30min</span>
-                            </section>
-                            <section class="item-action">
-                                <img src="../../visuals/python.png">
-                                <button class="start_course">Start Course</button>
-                            </section>
-                        </article>
-                        <article class="catalog-item">
-                            <section class="item-info">
-                                <h4>Introduction to C++ Programming</h4>
-                                <p>Learn the basics of Python, a versatile programming language used in web development, data analysis, and more.</p>
-                                <span>2h 30min</span>
-                            </section>
-                            <section class="item-action">
-                                <img src="../../visuals/c++.jpeg">
-                                <button class="start_course">Start Course</button>
-                            </section>
-                        </article>
+               
 
-                    </section>
-                </section>
-
-                <section class="certificates">
-                    <h3>My Certificates & Badges</h3>
-                    <section class="certificates-grid">
-                        <article class="certificate-card">
-                            <section>
-                                <img src="../../visuals/python.png">
-                            </section>
-                            <p>Python Fundamentals Certificate</p>
-                        </article>
-                        <article class="certificate-card">
-                            <section>
-                                <img src="../../visuals/java.webp">
-                            </section>
-                            <p>Java Fundamentals Certificate</p>
-                        </article>
-                        <article class="certificate-card">
-                            <section>
-                                <img src="../../visuals/c++.jpeg">
-                            </section>
-                            <p>C++ Fundamentals Certificate</p>
-                        </article>
 
                         <!-- Add other certificates similarly -->
                     </section>
