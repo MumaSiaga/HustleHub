@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Job Map - Directions</title>
+  <link rel="stylesheet" href="../styles/nagivation.css">
+  <style>
+    /* Ensure body fills screen */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    /* Main content area (map container) */
+    .main_content {
+      position: relative;
+      margin-left: 240px;      /* sidebar width */
+      margin-top: 60px;        /* topbar height */
+      padding: 0;
+      min-height: calc(100vh - 60px);
+    }
+
+    /* Map */
+    #map {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    /* Search box */
+    #pac-input {
+      position: absolute;
+      top: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 320px;
+      padding: 10px 15px;
+      border-radius: 25px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      outline: none;
+      z-index: 5;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+    }
+
+    /* Info panel */
+    #info-panel {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: white;
+      padding: 20px 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      text-align: center;
+      z-index: 5;
+      min-width: 220px;
+    }
+
+    #info-panel .distance {
+      font-size: 24px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    #info-panel .duration {
+      font-size: 20px;
+      color: #555;
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 768px) {
+      .main_content {
+        margin-left: 0;        /* sidebar collapses */
+        margin-top: 60px;
+      }
+      #pac-input {
+        width: 260px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <%- include('partials/navigation') %>
+
+  <!-- Main content -->
+  <section class="main_content" id="mainContent">
+      <%- include('partials/topbar') %>
+
+      <!-- Search box -->
+      <input id="pac-input" type="text" placeholder="Search for a place" />
+
+      <!-- Map -->
+      <div id="map"></div>
+
+      <!-- Info panel -->
+      <div id="info-panel">
+        <span class="distance">Distance: --</span>
+        <span class="duration">Duration: --</span>
+      </div>
+  </section>
+
+  <!-- Google Maps API -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=<%= MAP_KEY %>&libraries=places&callback=initMap">
+  </script>
+
+  <script>
+    let map, userPos;
+    let directionsService, directionsRenderer;
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: 0, lng: 0 },
+        zoom: 2,
+      });
+
+      directionsService = new google.maps.DirectionsService();
+      directionsRenderer = new google.maps.DirectionsRenderer({
+        suppressMarkers: false,
+        polylineOptions: {
+          strokeColor: '#003366', // Dark blue route
+          strokeWeight: 6,
+          strokeOpacity: 0.9
+        }
+      });
+      directionsRenderer.setMap(map);
+
+      // Get user location
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+          userPos = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          };
+          map.setCenter(userPos);
+          map.setZoom(14);
+
+          new google.maps.Marker({
+            position: userPos,
+            map,
+            title: "You are here",
+          });
+        });
+      }
+
+      // Search box
+      const input = document.getElementById("pac-input");
+      const searchBox = new google.maps.places.SearchBox(input);
+      map.addListener("bounds_changed", () => searchBox.setBounds(map.getBounds()));
+
+      searchBox.addListener("places_changed", () => {
+        const places = searchBox.getPlaces();
+        if (!places.length) return;
+        const place = places[0];
+        if (!place.geometry || !place.geometry.location) return;
+
+        // Drop marker
+        new google.maps.Marker({
+          map,
+          position: place.geometry.location,
+          title: place.name,
+        });
+
+        map.panTo(place.geometry.location);
+        map.setZoom(14);
+
+        if (userPos) {
+          directionsService.route(
+            {
+              origin: userPos,
+              destination: place.geometry.location,
+              travelMode: google.maps.TravelMode.DRIVING,
+            },
+            (result, status) => {
+              if (status === "OK") {
+                directionsRenderer.setDirections(result);
+                const leg = result.routes[0].legs[0];
+                document.querySelector("#info-panel .distance").textContent = `Distance: ${leg.distance.text}`;
+                document.querySelector("#info-panel .duration").textContent = `Duration: ${leg.duration.text}`;
+              } else {
+                alert("Directions request failed due to " + status);
+              }
+            }
+          );
+        }
+      });
+
+      // Example job marker
+    //   const jobPos = { lat: -26.2041, lng: 28.0473 };
+    //   new google.maps.Marker({
+    //     position: jobPos,
+    //     map,
+    //     title: "Plumber Job",
+    //   });
+    }
+  </script>
+  <script src="../scripts/sidebar.js"></script>
+</body>
+</html>
