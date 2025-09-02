@@ -27,11 +27,11 @@ router.get('/forum', async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
-    // Fetch posts with author and comment authors populated
+    // Fetch posts with post author and comment authors populated
     const posts = await ForumPost.find({})
       .sort({ createdAt: -1 })
-      .populate('author', 'username') // post author
-      .populate('comments.author', 'username'); // comment authors
+      .populate('author', 'username')            // post author
+      .populate('comments.author', 'username');  // comment authors
 
     res.render('forum', { user, posts });
   } catch (err) {
@@ -64,11 +64,12 @@ router.post('/forum/comment/:postId', async (req, res) => {
     const post = await ForumPost.findById(req.params.postId);
     post.comments.push({ content, author: req.user._id });
     await post.save();
-    res.redirect('/forum');
+    res.redirect('/service/forum');  // Redirect to correct route
   } catch (err) {
     console.error(err);
     res.status(500).send("Server error");
   }
 });
+
 
 module.exports = router;
