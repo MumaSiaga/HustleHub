@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User=require('../model/User');
 const ForumPost = require('../model/forum');
+const Job = require('../model/Job');
 
 router.get('/home',async function(req,res){
     const user=await User.findById(req.user._id);
@@ -14,8 +15,15 @@ router.get('/profile',async function(req,res){
 router.get('/learning',function(req,res){
     res.render('learningHub');
 });
-router.get('/feed',function(req,res){
-    res.render('JobFeed');
+router.get('/feed', async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id); // current user
+    const jobs = await Job.find({}).sort({ createdAt: -1 }); // newest first
+    res.render('JobFeed', { user, jobs });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
 });
 router.get('/map',function(req,res){
     const MAP_KEY=process.env.MAP_KEY;
