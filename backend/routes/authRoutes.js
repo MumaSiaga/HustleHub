@@ -18,7 +18,7 @@ router.get('/google/callback',
     if (req.user.role === 'freelancer') {
       return res.redirect('/service/home');
     } else if (req.user.role === 'client') {
-      return res.redirect('/freelancer/home');
+      return res.redirect('/employer/home');
     }
 
   }

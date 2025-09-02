@@ -79,10 +79,8 @@ router.post('/profile/complete',ensureAuth,async(req,res)=>{
       return res.render('serviceHome', { user: updatedUser });
     }
     else if (updatedUser.role=='client') {
-      return res.redirect('freelancer/home');
+      return res.redirect('employer/home');
     }
-
-    res.redirect('/chat');
   } catch (err) {
     console.error('Error updating user profile:', err);
     res.status(500).send('Error updating profile');
@@ -95,11 +93,7 @@ router.post('/profile/complete',ensureAuth,async(req,res)=>{
 
  
 
-// router.use('/', require('./notificationRoutes'));
 router.use('/', require('./authRoutes'));
-// router.use('/', require('./chatRoutes'));
-// router.use('/', require('./profileRoutes'));
-// router.use('/', require('./StatusRoutes'));
 
 module.exports = router;
 
