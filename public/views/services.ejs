@@ -1,21 +1,107 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="../styles/nav.css">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Services</title>
+  <link rel="stylesheet" href="../styles/nav.css">
+  <link crossorigin="" href="https://fonts.gstatic.com/" rel="preconnect"/>
+  <link as="style" href="https://fonts.googleapis.com/css2?display=swap&amp;family=Inter:wght@400;500;700;900&amp;family=Noto+Sans:wght@400;500;700;900" onload="this.rel='stylesheet'" rel="stylesheet"/>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style type="text/tailwindcss">
+    :root {
+      --primary-color: #1173d4;
+      --secondary-color: #dbeafe;
+      --background-color: #ffffff;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --accent-color: #93c5fd;
+    }
+    body {
+      font-family: "Inter", sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+    }
+  </style>
 </head>
 <body>
-    <%- include('partials/nav') %>
-    <section class="main_content" id="mainContent">
-        <%- include('partials/bar') %>
-        <section>
-MUALUSI ORI UDO ITA!
-        </section>
-    </section>
+  <%- include('partials/nav') %>
+  <section class="main_content" id="mainContent">
+    <%- include('partials/bar') %>
 
-    <script src="../scripts/bar.js"></script>
+    <main class="container mx-auto px-4 py-8 max-w-7xl">
+      <div class="mb-8">
+        <h1 class="text-4xl font-extrabold text-[var(--text-primary)] mb-2 leading-tight">Services</h1>
+        <p class="text-base text-[var(--text-secondary)] leading-relaxed">
+          Browse and connect with skilled local youth offering a variety of services.
+        </p>
+      </div>
+
+      <!-- Search bar -->
+      <div class="mb-8">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 flex items-center pl-4 text-[var(--text-secondary)] pointer-events-none">
+            <svg fill="currentColor" height="24px" viewBox="0 0 256 256" width="24px" xmlns="http://www.w3.org/2000/svg">
+              <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
+            </svg>
+          </div>
+          <input id="searchInput" class="w-full px-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:border-transparent transition duration-200 ease-in-out" placeholder="Search for services or providers" value=""/>
+        </div>
+      </div>
+
+      <!-- Available Providers -->
+      <h2 class="text-2xl font-bold text-[var(--text-primary)] mb-6">Available Providers</h2>
+      <div id="freelancerGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% freelancers.forEach(freelancer => { %>
+        <div class="freelancer-card bg-white rounded-lg shadow-md p-6 border border-gray-200 flex flex-col">
+          <div class="flex items-center gap-4 mb-4">
+            <img class="rounded-full size-16" src="<%= freelancer.profileImage || '../../visuals/user_profile.webp' %>" alt="<%= freelancer.username %>"/>
+            <div class="flex-1">
+              <p class="text-lg font-semibold text-[var(--text-primary)] freelancer-name"><%= freelancer.username %></p>
+              <p class="text-sm text-[var(--text-secondary)]">
+                <%= freelancer.skills && freelancer.skills.length > 0 ? freelancer.skills.join(', ') : 'No skills listed' %>
+              </p>
+            </div>
+          </div>
+
+          <% if (freelancer.skills && freelancer.skills.length > 0) { %>
+          <div class="flex items-center gap-2 mb-4">
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Verified Skills</span>
+          </div>
+          <% } %>
+
+          <div class="mt-auto">
+            <a href="/employer/services/<%= freelancer._id %>" 
+               class="w-full inline-block text-center bg-[var(--secondary-color)] text-[var(--primary-color)] border border-[var(--primary-color)] px-4 py-2 rounded-md hover:bg-blue-100 transition duration-300 ease-in-out text-sm font-semibold">
+              View Profile
+            </a>
+          </div>
+        </div>
+        <% }) %>
+      </div>
+    </main>
+  </section>
+
+  <!-- Search functionality -->
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const freelancerGrid = document.getElementById('freelancerGrid');
+    const cards = Array.from(document.getElementsByClassName('freelancer-card'));
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.toLowerCase();
+
+      cards.forEach(card => {
+        const name = card.querySelector('.freelancer-name').textContent.toLowerCase();
+        if (name.includes(query)) {
+          card.style.display = 'flex';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  </script>
+
+  <script src="../scripts/bar.js"></script>
 </body>
 </html>
