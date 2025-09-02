@@ -4,6 +4,8 @@ const Job = require("../model/job");
 const User=require('../model/User');
 const ForumPost = require('../model/forum');
 
+
+
 // Employer Home
 router.get('/home', async (req, res) => {
     try {
@@ -24,10 +26,7 @@ router.get('/messages', (req, res) => {
     res.render('messages'); // this will render messages.ejs
 });
 
-// Services Page
-router.get('/services', (req, res) => {
-    res.render('services'); // this will render services.ejs
-});
+
 
 // Payments Page
 router.get('/payments', (req, res) => {
@@ -151,10 +150,32 @@ router.post('/forum/comment/:postId', async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+// 1. List all freelancers (must be **before** the :id route)
+router.get('/services', async (req, res) => {
+  try {
+    const freelancers = await User.find({ role: 'freelancer' });
+    res.render('services', { freelancers });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
 
+// 2. Freelancer profile page
+router.get('/services/:id', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
 
+    if (!user || user.role !== 'freelancer') {
+      return res.status(404).send('Freelancer not found');
+    }
 
-
+    res.render('viewProfile', { user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error');
+  }
+});
 
 
 module.exports = router;
