@@ -18,6 +18,11 @@ nav {
   padding: 0 40px;
   font-size: 1.2rem;
 }
+.feature-icon {
+  font-size: 3rem;
+  color: black;   /* same blue as your theme */
+  margin-bottom: 15px;
+}
 
 
 .nav-center {
