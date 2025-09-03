@@ -3,6 +3,7 @@ const router = express.Router();
 const { ensureAuth } = require('../middleware/authmiddleware');
 const User=require('../model/User');
 const ForumPost = require('../model/forum');
+const Job = require('../model/Job');
 
 router.get('/home', ensureAuth, async function(req,res){
     const user = req.user || req.session.user;
@@ -24,6 +25,17 @@ router.get('/learning', ensureAuth, async function(req,res){
         res.render('learningHub', { courses: [] });
     }
 });
+
+router.get('/feed', async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id); // current user
+    const jobs = await Job.find({}).sort({ createdAt: -1 }); // newest first
+    res.render('JobFeed', { user, jobs });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Server error");
+  }
+
 
 // Take quiz for a course
 router.get('/quiz/:courseId', ensureAuth, async function(req,res){
@@ -117,8 +129,6 @@ router.post('/quiz/:courseId/submit', ensureAuth, async function(req,res){
 });
 
 
-router.get('/feed',function(req,res){
-    res.render('JobFeed');
 });
 router.get('/map',function(req,res){
     const MAP_KEY=process.env.MAP_KEY;
@@ -173,6 +183,33 @@ router.post('/forum/comment/:postId', async (req, res) => {
     console.error(err);
     res.status(500).send("Server error");
   }
+});
+
+
+// Nearby jobs based on current coordinates
+router.post('/nearby-jobs', async (req, res) => {
+    try {
+        const { latitude, longitude } = req.body;
+
+        if (!latitude || !longitude) {
+            return res.status(400).json({ message: 'Coordinates required' });
+        }
+
+        // Find jobs within 15 km
+        const nearbyJobs = await Job.find({
+            location: {
+                $near: {
+                    $geometry: { type: "Point", coordinates: [longitude, latitude] },
+                    $maxDistance: 15000 // 15 km
+                }
+            }
+        }).limit(5);
+
+        res.json(nearbyJobs);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
 });
 
 

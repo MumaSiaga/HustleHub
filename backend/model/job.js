@@ -14,19 +14,29 @@ const JobSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  location: {
-    type: String,
-    required: true
-  },
   contact: {
-    type: String, // store as string to allow '+' and '-' if needed
+    type: String,
     required: true,
     trim: true
+  },
+  location: {
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: true
+    }
   },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
+
+// Add geospatial index
+JobSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('Job', JobSchema);

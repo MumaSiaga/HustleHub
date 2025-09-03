@@ -41,7 +41,7 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                             <th class="px-6 py-3">Job Title</th>
                             <th class="px-6 py-3">Description</th>
                             <th class="px-6 py-3">Pay</th>
-                            <th class="px-6 py-3">Location</th>
+                            <th class="px-6 py-3">Nearest Town</th>
                             <th class="px-6 py-3">Contact/WhatsApp</th>
                             <th class="px-6 py-3">Actions</th>
                         </tr>
@@ -54,13 +54,13 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                                     data-title="<%= job.title %>"
                                     data-description="<%= job.description %>"
                                     data-pay="<%= job.salary %>"
-                                    data-location="<%= job.location %>"
+                                    data-town="<%= job.town %>"
                                     data-contact="<%= job.contact %>"
                                 >
                                     <td class="px-6 py-4 font-medium text-[var(--text-primary)] whitespace-nowrap"><%= job.title %></td>
                                     <td class="px-6 py-4"><%= job.description.substring(0,50) %>...</td>
                                     <td class="px-6 py-4">$<%= job.salary %></td>
-                                    <td class="px-6 py-4"><%= job.location %></td>
+                                    <td class="px-6 py-4"><%= job.town %></td>
                                     <td class="px-6 py-4"><%= job.contact %></td>
                                     <td class="px-6 py-4 flex gap-2">
                                         <button class="editJobBtn font-medium text-[var(--primary-color)] hover:underline">Edit</button>
@@ -86,6 +86,8 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
             <h1 class="text-3xl font-bold text-[var(--text-primary)] mb-8" id="formHeader">Post New Job</h1>
             <form action="/employer/jobs" method="POST" id="jobForm">
                 <input type="hidden" name="id" id="jobId" value="">
+                <input type="hidden" name="latitude" id="latitude" value="">
+                <input type="hidden" name="longitude" id="longitude" value="">
                 <div class="grid grid-cols-1 gap-6">
                     <div>
                         <label class="block text-sm font-medium text-[var(--text-secondary)]" for="title">Job Title</label>
@@ -104,15 +106,10 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                                 id="salary" name="salary" placeholder="5000" type="number" required/>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-[var(--text-secondary)]" for="location">Location</label>
+                            <label class="block text-sm font-medium text-[var(--text-secondary)]" for="contact">Contact/WhatsApp</label>
                             <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] sm:text-sm" 
-                                id="location" name="location" placeholder="e.g., Remote or Nairobi" type="text" required/>
+                                id="contact" name="contact" placeholder="e.g., +254712345678" type="text" required/>
                         </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-[var(--text-secondary)]" for="contact">Contact/WhatsApp</label>
-                        <input class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[var(--primary-color)] focus:ring-[var(--primary-color)] sm:text-sm" 
-                            id="contact" name="contact" placeholder="e.g., +254712345678" type="text" required/>
                     </div>
                 </div>
                 <div class="mt-8 flex justify-between">
@@ -120,33 +117,6 @@ body { font-family: "Inter", sans-serif; background-color: var(--background-colo
                     <button type="submit" class="bg-[var(--primary-color)] text-white px-6 py-3 rounded-md hover:bg-[var(--accent-color)] transition-colors duration-200" id="submitJobBtn">Submit Job</button>
                 </div>
             </form>
-        </div>
-
-        <!-- Job Details Modal -->
-        <div id="viewJobModal" class="hidden fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div class="bg-white rounded-lg shadow-lg p-8 w-11/12 md:w-2/3 max-h-[90vh] overflow-y-auto relative">
-                <button id="closeViewModal" class="absolute top-4 right-4 text-gray-600 hover:text-gray-900 font-bold">&times;</button>
-                <h1 id="viewJobTitle" class="text-3xl font-bold mb-4 text-[var(--text-primary)]"></h1>
-                <p><strong>Description:</strong> <span id="viewJobDescription"></span></p>
-                <p><strong>Pay:</strong> $<span id="viewJobSalary"></span></p>
-                <p><strong>Location:</strong> <span id="viewJobLocation"></span></p>
-                <p><strong>Contact:</strong> <span id="viewJobContact"></span></p>
-
-                <h2 class="text-2xl font-semibold mt-6 mb-2 text-[var(--text-primary)]">Applicants (dummy data)</h2>
-                <table class="w-full text-left text-sm text-[var(--text-secondary)]">
-                    <thead class="bg-gray-50 text-[var(--text-primary)] uppercase text-xs">
-                        <tr>
-                            <th class="px-6 py-3">Name</th>
-                            <th class="px-6 py-3">Email</th>
-                            <th class="px-6 py-3">Date Applied</th>
-                        </tr>
-                    </thead>
-                    <tbody id="dummyApplicants">
-                        <tr><td class="px-6 py-4">John Doe</td><td class="px-6 py-4">john@example.com</td><td class="px-6 py-4">2025-09-02</td></tr>
-                        <tr><td class="px-6 py-4">Jane Smith</td><td class="px-6 py-4">jane@example.com</td><td class="px-6 py-4">2025-09-01</td></tr>
-                    </tbody>
-                </table>
-            </div>
         </div>
 
     </section>
@@ -163,6 +133,19 @@ postNewJobBtn.addEventListener('click', () => {
     document.getElementById('formHeader').innerText = 'Post New Job';
     document.getElementById('jobForm').reset();
     document.getElementById('jobId').value = '';
+
+    // Get user's location
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            document.getElementById('latitude').value = position.coords.latitude;
+            document.getElementById('longitude').value = position.coords.longitude;
+        }, (err) => {
+            console.warn("Geolocation failed: ", err);
+            document.getElementById('latitude').value = '';
+            document.getElementById('longitude').value = '';
+        });
+    }
+
     jobsContent.classList.add('hidden');
     postJobForm.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -173,51 +156,6 @@ cancelBtn.addEventListener('click', () => {
     postJobForm.classList.add('hidden');
     jobsContent.classList.remove('hidden');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-});
-
-// Edit button
-document.querySelectorAll('.editJobBtn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        const row = e.target.closest('tr');
-        const id = row.dataset.id;
-        const title = row.dataset.title;
-        const description = row.dataset.description;
-        const salary = row.dataset.pay;
-        const location = row.dataset.location;
-        const contact = row.dataset.contact;
-
-        document.getElementById('formHeader').innerText = 'Edit Job';
-        document.getElementById('jobId').value = id;
-        document.getElementById('title').value = title;
-        document.getElementById('description').value = description;
-        document.getElementById('salary').value = salary;
-        document.getElementById('location').value = location;
-        document.getElementById('contact').value = contact;
-
-        jobsContent.classList.add('hidden');
-        postJobForm.classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-});
-
-// View button
-document.querySelectorAll('.viewJobBtn').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        const row = e.target.closest('tr');
-        document.getElementById('viewJobTitle').innerText = row.dataset.title;
-        document.getElementById('viewJobDescription').innerText = row.dataset.description;
-        document.getElementById('viewJobSalary').innerText = row.dataset.pay;
-        document.getElementById('viewJobLocation').innerText = row.dataset.location;
-        document.getElementById('viewJobContact').innerText = row.dataset.contact;
-
-        document.getElementById('viewJobModal').classList.remove('hidden');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-});
-
-// Close modal
-document.getElementById('closeViewModal').addEventListener('click', () => {
-    document.getElementById('viewJobModal').classList.add('hidden');
 });
 </script>
 
