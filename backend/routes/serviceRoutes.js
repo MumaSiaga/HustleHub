@@ -3,7 +3,7 @@ const router = express.Router();
 const { ensureAuth } = require('../middleware/authmiddleware');
 const User=require('../model/User');
 const ForumPost = require('../model/forum');
-const Job = require('../model/Job');
+const Job = require('../model/job');
 
 router.get('/home', ensureAuth, async function(req,res){
     const user = req.user || req.session.user;
