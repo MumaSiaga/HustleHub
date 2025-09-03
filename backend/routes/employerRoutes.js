@@ -4,6 +4,33 @@ const Job = require("../model/job");
 const User=require('../model/User');
 const ForumPost = require('../model/forum');
 const getCityFromCoordinates = require('../middleware/reverseGeo');
+const Product = require("../model/Product");
+const multer = require("multer");
+const path = require("path");
+
+// Multer storage
+const fs = require('fs');
+
+// Multer storage
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const dir = "public/uploads/";
+    // Check if folder exists; if not, create it
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
+
+
+
 
 
 // Employer Home
@@ -32,6 +59,8 @@ router.get('/messages', (req, res) => {
 router.get('/payments', (req, res) => {
     res.render('payments'); // this will render payments.ejs
 });
+
+
 
 
 // routes/employer.js
@@ -210,6 +239,98 @@ router.get('/services/:id', async (req, res) => {
     res.status(500).send('Server Error');
   }
 });
+
+
+// ------------------ MARKETPLACE ------------------
+
+// Show all products
+router.get("/marketplace", async (req, res) => {
+  try {
+    const products = await Product.find().sort({ createdAt: -1 });
+    res.render("marketplace", { products, user: req.user || null }); // <-- safe fallback
+  } catch (error) {
+    console.error("❌ Error loading products:", error);
+    res.render("marketplace", { products: [], user: req.user || null });
+  }
+});
+
+
+
+
+
+// Add new product with image upload
+router.post("/marketplace", upload.single("image"), async (req, res) => {
+  try {
+    const { name, description, price, category, condition } = req.body;
+    const imageUrl = req.file ? `/uploads/${req.file.filename}` : "https://via.placeholder.com/300";
+
+    const product = new Product({
+      name,
+      description,
+      price,
+      category,
+      condition,
+      imageUrl,
+      seller: req.user ? req.user._id : null
+    });
+
+    await product.save();
+    res.redirect("/employer/marketplace");
+  } catch (error) {
+    console.error("❌ Error posting product:", error);
+    res.status(500).send("Error posting product");
+  }
+});
+
+
+// Delete product
+router.post("/marketplace/delete/:id", async (req, res) => {
+  try {
+    await Product.findByIdAndDelete(req.params.id);
+    res.redirect("/employer/marketplace");
+  } catch (error) {
+    console.error("❌ Error deleting product:", error);
+    res.status(500).send("Error deleting product");
+  }
+});
+// GET Edit Product Form (no user check)
+router.get("/marketplace/edit/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).send("Product not found");
+
+    res.render("edit_product", { product });
+  } catch (err) {
+    console.error("❌ Error loading edit product form:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+// POST update product (no user check)
+router.post("/marketplace/edit/:id", upload.single("image"), async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).send("Product not found");
+
+    const { name, description, price, category, condition } = req.body;
+    product.name = name;
+    product.description = description;
+    product.price = price;
+    product.category = category;
+    product.condition = condition;
+
+    if (req.file) {
+      product.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    await product.save();
+    res.redirect("/employer/marketplace");
+  } catch (err) {
+    console.error("❌ Error updating product:", err);
+    res.status(500).send("Server error");
+  }
+});
+
 
 
 module.exports = router;
