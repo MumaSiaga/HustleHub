@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { ensureAuth, redirectIfLoggedIn,redirectIfNotAdmin } = require('../middleware/authmiddleware');
 const User = require('../model/User');
+const Job = require("../model/job");
 
 const bcrypt = require('bcrypt');
 // const adminController = require('../controllers/adminController');
@@ -79,7 +80,8 @@ router.post('/profile/complete',ensureAuth,async(req,res)=>{
       return res.render('serviceHome', { user: updatedUser });
     }
     else if (updatedUser.role=='client') {
-      return res.redirect('employer/home');
+      const jobs = await Job.find({}); // Fetch all jobs for clients
+      return res.render('employerhome', { user: updatedUser, jobs });
     }
   } catch (err) {
     console.error('Error updating user profile:', err);
