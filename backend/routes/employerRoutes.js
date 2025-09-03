@@ -3,7 +3,7 @@ const router = express.Router();
 const Job = require("../model/job");
 const User=require('../model/User');
 const ForumPost = require('../model/forum');
-
+const getCityFromCoordinates = require('../middleware/reverseGeo');
 
 
 // Employer Home
@@ -45,15 +45,32 @@ router.post("/jobs", async (req, res) => {
 
     const location = {
       type: "Point",
-      coordinates: [parseFloat(longitude), parseFloat(latitude)] // order is [lng, lat]
+      coordinates: [parseFloat(longitude), parseFloat(latitude)] // [lng, lat]
     };
 
+    // 🔎 Find nearest city/town from coordinates
+    const city = await getCityFromCoordinates(latitude, longitude);
+    console.log(city);
     if (id) {
-      // Update job
-      await Job.findByIdAndUpdate(id, { title, description, salary, contact, location });
+      // Update existing job
+      await Job.findByIdAndUpdate(id, { 
+        title, 
+        description, 
+        salary, 
+        contact, 
+        location,
+        city // store nearest city
+      });
     } else {
-      // Create job
-      const job = new Job({ title, description, salary, contact, location });
+      // Create new job
+      const job = new Job({ 
+        title, 
+        description, 
+        salary, 
+        contact, 
+        location,
+        city // store nearest city
+      });
       await job.save();
     }
 
