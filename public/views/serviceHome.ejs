@@ -38,7 +38,16 @@
         .recommended_jobs > section:first-child button:hover {
             background-color: #0056b3;
         }
-
+        .apply{
+            padding: 6px 12px;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: auto;
+        }
         .recommended {
             display: flex;
             gap: 15px;
@@ -108,6 +117,7 @@
             <form class="logoutbtn" action="/logout" method="POST">
                 <button type="submit">Logout</button>
             </form>
+            
         </section>
 
         <!-- Recommended Jobs Section -->
@@ -120,27 +130,31 @@
                 <p>Loading recommended jobs...</p> <!-- Placeholder -->
             </section>
         </section>
-
-        <!-- Learning Hub Section -->
-        <section class="learning">
-            <section class="learning_heading">
-                <h3>learning hub progress</h3>
-                <h3>community updates</h3>
+        <!-- Applied Jobs Section -->
+        <section class="applied_jobs">
+            <section>
+                <h3>Jobs you applied for</h3>
             </section>
-            <section class="progress_updates">
-                <!-- These sections should be in a row -->
-                <section class="progress">
-                    <section class="progress_heading">
-                        <strong id="progress_title">data science fundamentals</strong>
-                        <progress></progress>
-                        <button>continue learning</button>
-                    </section>
-                </section>
-                <section class="updates">
-                    <p>this are the updates</p>
-                </section>
+            <section class="recommended">
+                <% if (user.appliedJobs && user.appliedJobs.length > 0) { %>
+                    <% user.appliedJobs.forEach(app => { %>
+                        <% if (app.job) { %>
+                        <article class="job">
+                            <img src="../../visuals/job.jpeg" alt="Job Image">
+                            <h2><%= app.job.title %></h2>
+                            <p><%= app.job.city %></p>
+                            <strong><%= app.job.description %></strong>
+                            <span class="status">Status: <%= app.status %></span>
+                        </article>
+                        <% } %>
+                    <% }) %>
+                    <% } else { %>
+                    <p>You haven’t applied for any jobs yet.</p>
+                    <% } %>
+
             </section>
         </section>
+
     </section>
 
     <script src="/scripts/sidebar.js"></script>
@@ -167,15 +181,19 @@
                             jobs.forEach(job => {
                                 container.innerHTML += `
                                     <article class="job">
-                                        <img src="${job.image || '/default-job.png'}" alt="Job Image">
-                                        <h4>${job.title}</h4>
-                                        <p>${job.description}</p>
+                                        <img src="../../visuals/job.jpeg" alt="Job Image">
+                                        <h2>${job.title}</h2>
+                                        <p>${job.city}</p>
+                                        <strong>${job.description}</strong>
+                                        <button class="apply" onclick="applyJob('${job._id}')">Apply</button>
+
                                     </article>
                                 `;
                             });
                         } else {
                             container.innerHTML = '<p>No recommended jobs nearby.</p>';
                         }
+
 
                     } catch (err) {
                         console.error(err);
@@ -189,6 +207,23 @@
                 document.querySelector('.recommended').innerHTML = '<p>Geolocation is not supported.</p>';
             }
         }
+        async function applyJob(jobId) {
+            try {
+                const res = await fetch(`/service/jobs/apply/${jobId}`, {
+                    method: 'POST'
+                });
+
+                if (res.ok) {
+                    alert('Applied successfully!');
+                } else {
+                    alert('Error applying for job');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error applying for job');
+            }
+        }
+
 
         // Load recommended jobs on page load
         fetchRecommendedJobs();
