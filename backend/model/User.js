@@ -12,6 +12,12 @@ const UserSchema = new mongoose.Schema({
     type: String,
     enum: ['freelancer', 'client']
   },
+  appliedJobs: [
+    {
+      job: { type: mongoose.Schema.Types.ObjectId, ref: 'Job' },
+      status: { type: String, enum: ['pending', 'rejected', 'hired'], default: 'pending' }
+    }
+  ],
   createdAt: { type: Date, default: Date.now }
 });
 

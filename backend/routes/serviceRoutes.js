@@ -5,11 +5,25 @@ const User=require('../model/User');
 const ForumPost = require('../model/forum');
 const Job = require('../model/job');
 
-router.get('/home', ensureAuth, async function(req,res){
-    const user = req.user || req.session.user;
-    const userData = await User.findById(user._id);
-    res.render('serviceHome', { user: userData });
+// Service Home
+router.get('/home', ensureAuth, async function(req, res) {
+    try {
+        const user = req.user || req.session.user;
+
+        // Populate applied jobs so they are available in EJS
+        const userData = await User.findById(user._id)
+  .populate('appliedJobs.job') // populate the job inside each appliedJobs object
+  .exec();
+
+
+
+        res.render('serviceHome', { user: userData });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send("Error loading service home");
+    }
 });
+
 router.get('/profile', ensureAuth, async function(req,res){
     const user = req.user || req.session.user;
     const userData = await User.findById(user._id);
@@ -211,6 +225,28 @@ router.post('/nearby-jobs', async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+
+router.post('/jobs/apply/:jobId', ensureAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const jobId = req.params.jobId;
+
+    const alreadyApplied = user.appliedJobs.some(a => a.job.toString() === jobId);
+    if (!alreadyApplied) {
+      user.appliedJobs.push({ job: jobId, status: 'pending' }); // add with status
+      await user.save();
+    }
+
+    res.redirect('/service/home');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error applying for job");
+  }
+});
+
+
+
 
 
 
