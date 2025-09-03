@@ -35,41 +35,48 @@ router.get('/payments', (req, res) => {
 
 
 // routes/employer.js
+// routes/employer.js
 router.post("/jobs", async (req, res) => {
   try {
     const { id, title, description, salary, contact, latitude, longitude } = req.body;
 
-    if (!latitude || !longitude) {
-      return res.status(400).send("Location required");
+    let updateData = { title, description, salary, contact };
+
+    // Only if new coordinates were provided
+    if (latitude && longitude) {
+      const location = {
+        type: "Point",
+        coordinates: [parseFloat(longitude), parseFloat(latitude)]
+      };
+
+      const city = await getCityFromCoordinates(latitude, longitude);
+      updateData.location = location;
+      updateData.city = city;
     }
 
-    const location = {
-      type: "Point",
-      coordinates: [parseFloat(longitude), parseFloat(latitude)] // [lng, lat]
-    };
-
-    // 🔎 Find nearest city/town from coordinates
-    const city = await getCityFromCoordinates(latitude, longitude);
-    console.log(city);
     if (id) {
       // Update existing job
-      await Job.findByIdAndUpdate(id, { 
-        title, 
-        description, 
-        salary, 
-        contact, 
-        location,
-        city // store nearest city
-      });
+      await Job.findByIdAndUpdate(id, updateData);
     } else {
-      // Create new job
-      const job = new Job({ 
-        title, 
-        description, 
-        salary, 
-        contact, 
+      // Create new job (must have location!)
+      if (!latitude || !longitude) {
+        return res.status(400).send("Location required for new jobs");
+      }
+
+      const location = {
+        type: "Point",
+        coordinates: [parseFloat(longitude), parseFloat(latitude)]
+      };
+
+      const city = await getCityFromCoordinates(latitude, longitude);
+
+      const job = new Job({
+        title,
+        description,
+        salary,
+        contact,
         location,
-        city // store nearest city
+        city
       });
       await job.save();
     }
@@ -80,6 +87,7 @@ router.post("/jobs", async (req, res) => {
     res.status(500).send("Error posting/updating job");
   }
 });
+
 
 
 
@@ -94,25 +102,25 @@ router.get("/jobs", async (req, res) => {
   }
 });
 
-// GET single job for viewing
-router.get("/jobs/view/:id", async (req, res) => {
-  try {
-    const job = await Job.findById(req.params.id);
-    if (!job) return res.status(404).send("Job not found");
+// // GET single job for viewing
+// router.get("/jobs/view/:id", async (req, res) => {
+//   try {
+//     const job = await Job.findById(req.params.id);
+//     if (!job) return res.status(404).send("Job not found");
 
-    // Dummy applicants data
-    const applicants = [
-      { name: "Alice Smith", email: "alice@example.com", submittedAt: "2025-09-01" },
-      { name: "Bob Johnson", email: "bob@example.com", submittedAt: "2025-09-02" },
-      { name: "Charlie Lee", email: "charlie@example.com", submittedAt: "2025-09-03" }
-    ];
+//     // Dummy applicants data
+//     const applicants = [
+//       { name: "Alice Smith", email: "alice@example.com", submittedAt: "2025-09-01" },
+//       { name: "Bob Johnson", email: "bob@example.com", submittedAt: "2025-09-02" },
+//       { name: "Charlie Lee", email: "charlie@example.com", submittedAt: "2025-09-03" }
+//     ];
 
-    res.render("job_view", { job, applicants });
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error fetching job");
-  }
-});
+//     res.render("job_view", { job, applicants });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Error fetching job");
+//   }
+// });
 
 
 // DELETE job
