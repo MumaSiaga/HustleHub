@@ -244,10 +244,14 @@ router.get('/services/:id', async (req, res) => {
 // ------------------ MARKETPLACE ------------------
 
 // Show all products
+// Show all products
 router.get("/marketplace", async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
-    res.render("marketplace", { products, user: req.user || null }); // <-- safe fallback
+    const products = await Product.find()
+      .sort({ createdAt: -1 })
+      .populate("seller", "username"); // ✅ get seller info
+
+    res.render("marketplace", { products, user: req.user || null }); // ✅ pass logged in user
   } catch (error) {
     console.error("❌ Error loading products:", error);
     res.render("marketplace", { products: [], user: req.user || null });

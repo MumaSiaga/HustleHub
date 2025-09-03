@@ -33,6 +33,7 @@ body { font-family: 'Inter', sans-serif; background-color: var(--background-colo
 .more-btn { position: absolute; bottom: 8px; right: 8px; cursor: pointer; font-size: 24px; color: #4a5568; }
 .options-menu { display: none; position: absolute; bottom: 32px; right: 8px; background: white; border: 1px solid #ccc; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); z-index: 50; flex-direction: column; min-width: 120px; }
 .options-menu button, .options-menu a { display: flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 14px; width: 100%; }
+#wordCount { text-align: right; font-size: 0.875rem; color: #6b7280; margin-top: 0.25rem; }
 </style>
 </head>
 <body>
@@ -110,8 +111,9 @@ body { font-family: 'Inter', sans-serif; background-color: var(--background-colo
         <input type="text" id="product-name" name="name" class="form-input" placeholder="e.g., Handcrafted Leather Wallet" required/>
       </div>
       <div>
-        <label for="description" class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Description</label>
-        <textarea id="description" name="description" rows="5" class="form-input placeholder:text-gray-400" placeholder="Describe your product"></textarea>
+        <label for="description" class="block text-sm font-medium text-[var(--text-secondary)] mb-2">Description (max 70 words)</label>
+        <textarea id="description" name="description" rows="5" class="form-input placeholder:text-gray-400" placeholder="Describe your product" oninput="updateWordCount(this)"></textarea>
+        <p id="wordCount">0 / 70 words</p>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
@@ -169,6 +171,7 @@ openBtn.addEventListener("click", () => {
   form.action = "/employer/marketplace";
   document.getElementById("productId").value = "";
   form.reset();
+  document.getElementById("wordCount").textContent = "0 / 70 words";
   modal.classList.remove("hidden"); modal.classList.add("flex");
 });
 closeBtn.addEventListener("click", () => { modal.classList.remove("flex"); modal.classList.add("hidden"); });
@@ -186,6 +189,7 @@ document.querySelectorAll(".edit-btn").forEach(btn => {
     document.getElementById("price").value = btn.dataset.price;
     document.getElementById("category").value = btn.dataset.category;
     document.getElementById("condition").value = btn.dataset.condition;
+    updateWordCount(document.getElementById("description"));
     modal.classList.remove("hidden"); modal.classList.add("flex");
   });
 });
@@ -203,6 +207,16 @@ document.querySelectorAll(".more-btn").forEach(dot => {
 window.addEventListener("click", () => {
   document.querySelectorAll(".options-menu").forEach(menu => menu.style.display = "none");
 });
+
+// Word count limit function
+function updateWordCount(textarea) {
+  let words = textarea.value.trim().split(/\s+/).filter(word => word.length > 0);
+  if (words.length > 70) {
+    words = words.slice(0, 70);
+    textarea.value = words.join(" ");
+  }
+  document.getElementById("wordCount").textContent = `${words.length} / 70 words`;
+}
 </script>
 </body>
 </html>
