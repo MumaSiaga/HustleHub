@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { ensureAuth, redirectIfLoggedIn,redirectIfNotAdmin } = require('../middleware/authmiddleware');
 const User = require('../model/User');
+const Job = require("../model/job");
 
 const bcrypt = require('bcrypt');
 // const adminController = require('../controllers/adminController');
