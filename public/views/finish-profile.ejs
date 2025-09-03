@@ -36,24 +36,21 @@
     <% } %>
 
     <% if (role === 'client') { %>
-    <section class="form-container">
+      <section class="form-container">
       <form action="/profile/complete" method="POST">
-        <input type="hidden" name="role" value="client">
-
-        <label for="companyName">Company / Name</label>
-        <input type="text" id="companyName" name="companyName" placeholder="Your name or company" required>
+        <input type="hidden" name="role" value="freelancer">
         
         <label for="location">Location</label>
         <input type="text" id="location" name="location" placeholder="Enter your city/town" required>
 
-        <label for="industry">Industry</label>
-        <input type="text" id="industry" name="industry" placeholder="e.g., Construction, IT, Marketing">
+        <label for="skills">Your Skills</label>
+        <input type="text" id="skills" name="skills" placeholder="Add skills separated by commas" required>
 
-        <label for="profilePic">Profile Picture / Logo</label>
-        <input type="file" id="profilePic" name="profilePic" accept="image/*">
+        <!-- <label for="profilePic">Profile Picture</label>
+        <input type="file" id="profilePic" name="profilePic" accept="image/*"> -->
 
-        <label for="bio">Short Description</label>
-        <textarea id="bio" name="bio" rows="4" placeholder="Describe your company or services"></textarea>
+        <label for="bio">Short Bio</label>
+        <textarea id="bio" name="bio" rows="4" placeholder="Tell us a bit about yourself"></textarea>
 
         <button type="submit">Complete Profile</button>
       </form>
