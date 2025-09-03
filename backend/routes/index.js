@@ -79,7 +79,7 @@ router.post('/profile/complete',ensureAuth,async(req,res)=>{
       return res.render('serviceHome', { user: updatedUser });
     }
     else if (updatedUser.role=='client') {
-      return res.redirect('employer/home');
+      return res.render('employerhome', { user: updatedUser });
     }
   } catch (err) {
     console.error('Error updating user profile:', err);
