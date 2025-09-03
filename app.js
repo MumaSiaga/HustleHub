@@ -43,6 +43,7 @@ app.use('/', require('./backend/routes/index'));
 app.use('/auth', require('./backend/routes/authRoutes'));
 app.use('/service', require('./backend/routes/serviceRoutes'));
 app.use('/employer', require('./backend/routes/employerRoutes'));
+app.use('/learning', require('./backend/routes/learningRoutes'));
 
 app.listen(port, () => {
     console.log(`Server is running on ${port}`);
