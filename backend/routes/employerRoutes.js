@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Job = require("../model/job");
+const Job = require("../model/Job");
 const User=require('../model/User');
 const ForumPost = require('../model/forum');
 
@@ -34,17 +34,26 @@ router.get('/payments', (req, res) => {
 });
 
 
-// POST a new job or update existing job
+// routes/employer.js
 router.post("/jobs", async (req, res) => {
   try {
-    const { id, title, description, location, salary, contact } = req.body;
+    const { id, title, description, salary, contact, latitude, longitude } = req.body;
+
+    if (!latitude || !longitude) {
+      return res.status(400).send("Location required");
+    }
+
+    const location = {
+      type: "Point",
+      coordinates: [parseFloat(longitude), parseFloat(latitude)] // order is [lng, lat]
+    };
 
     if (id) {
-      // Update existing job
-      await Job.findByIdAndUpdate(id, { title, description, location, salary, contact });
+      // Update job
+      await Job.findByIdAndUpdate(id, { title, description, salary, contact, location });
     } else {
-      // Create new job
-      const job = new Job({ title, description, location, salary, contact });
+      // Create job
+      const job = new Job({ title, description, salary, contact, location });
       await job.save();
     }
 

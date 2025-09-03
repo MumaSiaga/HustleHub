@@ -80,4 +80,31 @@ router.post('/forum/comment/:postId', async (req, res) => {
 });
 
 
+// Nearby jobs based on current coordinates
+router.post('/nearby-jobs', async (req, res) => {
+    try {
+        const { latitude, longitude } = req.body;
+
+        if (!latitude || !longitude) {
+            return res.status(400).json({ message: 'Coordinates required' });
+        }
+
+        // Find jobs within 15 km
+        const nearbyJobs = await Job.find({
+            location: {
+                $near: {
+                    $geometry: { type: "Point", coordinates: [longitude, latitude] },
+                    $maxDistance: 15000 // 15 km
+                }
+            }
+        }).limit(5);
+
+        res.json(nearbyJobs);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
+
+
 module.exports = router;
