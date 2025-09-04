@@ -35,17 +35,46 @@ const upload = multer({ storage: storage });
 
 // Employer Home
 router.get('/home', async (req, res) => {
-    try {
-        // Fetch all jobs
-        const jobs = await Job.find();
+  try {
+    const user = await User.findById(req.user._id);
 
-        // Render employerhome.ejs and pass jobs
-        res.render('employerhome', { jobs });
-    } catch (error) {
-        console.error("❌ Error loading employer home:", error);
-        res.render('employerhome', { jobs: [] }); // fallback
+    if (!user) {
+      return res.render('employerhome', { jobs: [], smartSuggestions: [] });
     }
+
+    // Extract emails from user's contacts
+    const contactEmails = user.contacts.map(c => c.email).filter(e => e);
+
+    // Find employer IDs for these emails
+    const employerIds = await User.find({ email: { $in: contactEmails } }).distinct('_id');
+
+    // Find jobs posted by these employers
+    const jobsByContacts = await Job.find({ employerid: { $in: employerIds } });
+
+    // Fetch freelancers who were hired for jobs
+    const freelancers = await User.find({ role: 'freelancer', 'appliedJobs.status': 'hired' })
+                                  .populate('appliedJobs.job');
+
+    // Filter freelancers who were hired for jobs by employers in contact list
+    const smartSuggestions = freelancers.filter(f =>
+      f.appliedJobs.some(a =>
+        jobsByContacts.some(job => a.job && a.job._id.equals(job._id))
+      )
+    );
+
+    // Fetch all jobs for stats
+    const jobs = await Job.find();
+
+    res.render('employerhome', {
+      jobs,
+      smartSuggestions
+    });
+  } catch (err) {
+    console.error("❌ Error loading home:", err);
+    res.render('employerhome', { jobs: [], smartSuggestions: [] });
+  }
 });
+
 
 
 // Messages Page

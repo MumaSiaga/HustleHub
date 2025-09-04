@@ -5,7 +5,15 @@ const { ensureAuth, redirectIfLoggedIn } = require('../middleware/authmiddleware
 const router = express.Router();
 
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', passport.authenticate('google', {
+  scope: [
+    'profile',
+    'email',
+    'https://www.googleapis.com/auth/contacts.readonly'
+  ],
+  prompt: 'consent',
+  accessType: 'offline'
+}));
 
 
 router.get('/google/callback',
