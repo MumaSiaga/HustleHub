@@ -18,7 +18,6 @@ app.use(express.static("public"));
 app.use('/styles', express.static(path.join(__dirname,'public','styles')));
 app.use('/scripts', express.static(path.join(__dirname,'public','scripts')));
 app.use('/visuals', express.static(path.join(__dirname,'visuals')));
-
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname,'public','views'));
 app.set('trust proxy', 1);
@@ -46,6 +45,7 @@ app.use('/service', require('./backend/routes/serviceRoutes'));
 app.use('/employer', require('./backend/routes/employerRoutes'));
 app.use('/learning', require('./backend/routes/learningRoutes'));
 app.use('/chat', require('./backend/routes/chatRoutes'));
+// app.use('/market',require('./backend/routes/marketRoute'));
 
 // ---------------------
 // Setup Socket.IO
