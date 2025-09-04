@@ -443,4 +443,124 @@ router.get('/services/:id',ensureAuth, async (req, res) => {
 });
 
 
+// ------------------ MARKETPLACE ------------------
+
+// Show all products
+// Show all products
+router.get("/marketplace", async (req, res) => {
+  try {
+    const products = await Product.find()
+      .sort({ createdAt: -1 })
+      .populate("seller", "username"); // ✅ get seller info
+
+    res.render("marketplace", { products, user: req.user || null }); // ✅ pass logged in user
+  } catch (error) {
+    console.error("❌ Error loading products:", error);
+    res.render("marketplace", { products: [], user: req.user || null });
+  }
+});
+
+
+// Add new product with image upload
+// Add new product with image upload
+router.post(
+  "/marketplace",
+  ensureAuth,
+  upload.single("image"),   // ✅ FIX: attach multer here
+  async (req, res) => {
+    try {
+      const { name, description, price, category, condition } = req.body;
+
+      // Create a new product and attach the seller ID
+      const newProduct = new Product({
+        name,
+        description,
+        price,
+        category,
+        condition,
+        seller: req.user._id
+      });
+
+      // Handle image if uploaded
+      if (req.file) {
+        newProduct.imageUrl = `/uploads/${req.file.filename}`; // ✅ save relative path
+      }
+
+      await newProduct.save();
+      res.redirect("/employer/marketplace");
+    } catch (error) {
+      console.error("❌ Error creating product:", error);
+      res.redirect("/employer/marketplace");
+    }
+  }
+);
+
+
+
+router.post("/marketplace/delete/:id", ensureAuth, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).send("Product not found");
+
+    // Check if logged-in user is the creator
+    if (product.seller.toString() !== req.user._id.toString()) {
+      return res.status(403).send("You are not allowed to delete this product");
+    }
+
+    await Product.findByIdAndDelete(req.params.id);
+    res.redirect("/employer/marketplace");
+  } catch (error) {
+    console.error("❌ Error deleting product:", error);
+    res.status(500).send("Error deleting product");
+  }
+});
+
+// GET Edit Product Form (no user check)
+router.get("/marketplace/edit/:id", ensureAuth, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).send("Product not found");
+
+    if (product.seller.toString() !== req.user._id.toString()) {
+      return res.status(403).send("You are not allowed to edit this product");
+    }
+
+    res.render("edit_product", { product });
+  } catch (err) {
+    console.error("❌ Error loading edit product form:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+
+// POST update product (no user check)
+router.post("/marketplace/edit/:id", ensureAuth, upload.single("image"), async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).send("Product not found");
+
+    if (product.seller.toString() !== req.user._id.toString()) {
+      return res.status(403).send("You are not allowed to update this product");
+    }
+
+    const { name, description, price, category, condition } = req.body;
+    product.name = name;
+    product.description = description;
+    product.price = price;
+    product.category = category;
+    product.condition = condition;
+
+    if (req.file) {
+      product.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    await product.save();
+    res.redirect("/employer/marketplace");
+  } catch (err) {
+    console.error("❌ Error updating product:", err);
+    res.status(500).send("Server error");
+  }
+});
+
+
 module.exports = router;
