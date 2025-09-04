@@ -44,8 +44,6 @@ app.use('/auth', require('./backend/routes/authRoutes'));
 app.use('/service', require('./backend/routes/serviceRoutes'));
 app.use('/employer', require('./backend/routes/employerRoutes'));
 app.use('/learning', require('./backend/routes/learningRoutes'));
-app.use('/chat', require('./backend/routes/chatRoutes'));
-// app.use('/market',require('./backend/routes/marketRoute'));
 
 // ---------------------
 // Setup Socket.IO

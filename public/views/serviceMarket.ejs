@@ -67,49 +67,46 @@ body { font-family: 'Inter', sans-serif; background-color: var(--background-colo
               <!-- Three dots more button -->
               <div class="more-btn">⋮</div>
 
-              <div class="options-menu flex flex-col">
-                    <% 
-                        let isOwner = false;
-                        if (user && product.seller) {
-                        if (product.seller._id) {
-                            isOwner = String(product.seller._id) === String(user._id);
-                        } else {
-                            isOwner = String(product.seller) === String(user._id);
-                        }
-                        }
-                    %>
+  <div class="options-menu flex flex-col">
+  <% 
+    let isOwner = false;
+    if (user && product.seller) {
+      if (product.seller._id) {
+        isOwner = String(product.seller._id) === String(user._id);
+      } else {
+        isOwner = String(product.seller) === String(user._id);
+      }
+    }
+  %>
 
-                    <% if (isOwner) { %>
-                        <!-- Edit button -->
-                        <button class="icon-btn edit edit-btn"
-                                data-id="<%= product._id %>"
-                                data-name="<%= product.name %>"
-                                data-description="<%= product.description %>"
-                                data-price="<%= product.price %>"
-                                data-category="<%= product.category %>"
-                                data-condition="<%= product.condition %>">
-                        <span class="material-symbols-outlined">edit</span> Edit
-                        </button>
+  <% if (isOwner) { %>
+    <!-- Edit button -->
+    <button class="icon-btn edit edit-btn"
+            data-id="<%= product._id %>"
+            data-name="<%= product.name %>"
+            data-description="<%= product.description %>"
+            data-price="<%= product.price %>"
+            data-category="<%= product.category %>"
+            data-condition="<%= product.condition %>">
+      <span class="material-symbols-outlined">edit</span> Edit
+    </button>
 
-                        <!-- Delete button -->
-                        <form action="/service/marketplace/delete/<%= product._id %>" method="POST">
-                        <button type="submit" class="icon-btn delete">
-                            <span class="material-symbols-outlined">delete</span> Delete
-                        </button>
-                        </form>
-                    <% } %>
+    <!-- Delete button -->
+    <form action="/service/marketplace/delete/<%= product._id %>" method="POST">
+      <button type="submit" class="icon-btn delete">
+        <span class="material-symbols-outlined">delete</span> Delete
+      </button>
+    </form>
+  <% } %>
 
-                    <!-- Everyone can see the Message button -->
-                    <a href="/chat/<%= product.seller %>" class="icon-btn message">
-                        <span class="material-symbols-outlined">message</span> Message
-                    </a>
-                    </div>
-            </div>
-          </div>
-        <% }) %>
-      <% } %>
-    </div>
-  </div>
+  <!-- Message form (everyone can see) -->
+  <form action="/service/<%= product._id %>/chat" method="POST">
+    <button type="submit" class="icon-btn message">
+      <span class="material-symbols-outlined">message</span> Message
+    </button>
+  </form>
+</div>
+
 
   <!-- Modal for Posting / Editing Product -->
   <div id="productFormModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">

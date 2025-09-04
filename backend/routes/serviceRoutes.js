@@ -6,9 +6,12 @@ const ForumPost = require('../model/forum');
 const Job = require('../model/job');
 const multer = require("multer");
 const path = require("path");
+
+const Chat=require('../model/chat')
+
 const fs = require("fs");
 const Product = require("../model/Product");
-// const marketplace = require('./backend/routes/marketRoute');
+
 
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -85,7 +88,86 @@ router.post("/marketplace/edit/:id", ensureAuth, upload.single("image"), async (
 router.post("/marketplace/delete/:id", ensureAuth, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
+    if (product.seller.toString() !== req.user._id.toString()) {
+      return res.status(403).send("You are not allowed to edit this product");
+    }
 
+    res.render("edit_product", { product });
+  } catch (error) {
+    console.error("❌ Error loading edit product form:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+router.post("/:productId/chat", ensureAuth, async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const buyerId = req.user._id;
+
+    // 1. Find product
+    const product = await Product.findById(productId).populate("seller", "name profileImage");
+    if (!product) return res.status(404).send("Product not found");
+
+    const sellerId = product.seller._id;
+
+    // Prevent user from chatting with themselves
+    if (buyerId.toString() === sellerId.toString()) {
+      return res.status(400).send("You cannot chat with yourself");
+    }
+
+    // 2. Sort participant IDs consistently
+    const participants = [buyerId.toString(), sellerId.toString()].sort();
+
+    // 3. Try to find existing chat
+    let chat = await Chat.findOne({
+      product: product._id,
+      participants
+    });
+
+    // 4. If no chat exists, create a new one
+    if (!chat) {
+      chat = new Chat({
+        product: product._id,
+        participants,
+        messages: []
+      });
+      await chat.save();
+    }
+
+    // 5. Populate participants and message senders for EJS
+    chat = await Chat.findById(chat._id)
+      .populate("participants", "name profileImage")
+      .populate("messages.sender", "name profileImage");
+
+    // 6. Redirect to chat page
+    res.redirect(`/service/${chat._id}`);
+  } catch (err) {
+    // Handle duplicate key error in case of race condition
+    if (err.code === 11000) {
+      // Use sellerId (already in scope) instead of product.seller
+      const participants = [req.user._id.toString(), sellerId.toString()].sort();
+      const chat = await Chat.findOne({
+        product: req.params.productId,
+        participants
+      });
+      return res.redirect(`/service/${chat._id}`);
+    }
+
+    console.error(err);
+    res.status(500).send("Error opening chat");
+  }
+});
+
+
+
+
+
+
+
+// Update product
+router.post("/marketplace/edit/:id", ensureAuth, upload.single("image"), async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
     if (!product) return res.status(404).send("Product not found");
     
     if (product.seller.toString() !== req.user._id.toString())
@@ -378,6 +460,77 @@ const applicant = {
     res.status(500).send("Error applying for job");
   }
 });
+router.get('/chat',ensureAuth ,async (req, res) => {
+  const currentUserId = req.user._id; // logged-in user ID
 
+  try {
+    // Fetch all chats for the current user
+    const chats = await Chat.find({ participants: currentUserId })
+      .populate('participants', 'username profileImage')  // include username
+      .populate('messages.sender', 'username profileImage') // include sender username
+      .sort({ updatedAt: -1 });
+
+    // Pass `chat: null` to prevent ReferenceError in EJS
+    res.render('chats', { chats, chat: null, currentUserId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+
+router.get('/:chatId',ensureAuth ,async (req, res) => {
+  const { chatId } = req.params;
+  const currentUserId = req.user._id;
+
+  try {
+    // Fetch all chats for sidebar
+    const chats = await Chat.find({ participants: currentUserId })
+      .populate('participants', 'username profileImage')
+      .populate('messages.sender', 'username profileImage')
+      .sort({ updatedAt: -1 });
+
+    // Fetch the selected chat
+    const chat = await Chat.findById(chatId)
+      .populate('participants', 'username profileImage')
+      .populate('messages.sender', 'username profileImage');
+
+    if (!chat) return res.status(404).send('Chat not found');
+
+    // Find other participant
+    const otherUser = chat.participants.find(p => p._id.toString() !== currentUserId.toString());
+
+    // Fetch current user
+    const currentUser = await User.findById(currentUserId);
+
+    res.render('chats', { chats, chat, currentUser, otherUser, currentUserId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+router.post("/:id", ensureAuth, async (req, res) => {
+  try {
+    const chatId = req.params.id;
+
+    const chat = await Chat.findById(chatId);
+    if (!chat) {
+      return res.status(404).send("Chat not found");
+    }
+
+    if (!chat.participants.some(p => p.toString() === req.user._id.toString())) {
+      return res.status(403).send("Not authorized to delete this chat");
+    }
+
+
+    await Chat.findByIdAndDelete(chatId);
+
+    res.redirect("/chat");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error deleting chat");
+  }
+});
 
 module.exports = router;
