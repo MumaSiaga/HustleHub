@@ -53,9 +53,6 @@
   </form>
 </div>
 
-
-
-
             <!-- Stats Section -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
                 <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200 card-hover">
@@ -70,28 +67,25 @@
 
 
             <!-- Smart Suggestions -->
-            <div class="mb-8">
+                         <div class="mb-8">
                 <h2 class="text-2xl font-semibold text-[var(--text-primary)] mb-4">Smart Suggestions</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <% if (smartSuggestions && smartSuggestions.length > 0) { %>
-                        <% smartSuggestions.forEach(f => { %>
-                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 text-center card-hover">
-                            <img 
-                            class="w-24 h-24 rounded-full object-cover border-2 border-[var(--primary-color)] mx-auto mb-4"
-                            src="<%= f.avatar || 'https://via.placeholder.com/150' %>" 
-                            alt="<%= f.username %>"
-                            />
-                            <p class="text-lg font-medium text-[var(--text-primary)]"><%= f.username %></p>
-                            <p class="text-base text-[var(--text-secondary)]">
-                            <%= f.skills.length > 0 ? f.skills.join(', ') : 'No skills listed' %>
-                            </p>
-                        </div>
-                        <% }) %>
-                    <% } else { %>
-                        <p class="text-[var(--text-secondary)]">No smart suggestions available yet.</p>
-                    <% } %>
+                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 text-center card-hover">
+                        <img alt="Sarah M." class="w-24 h-24 rounded-full object-cover border-2 border-[var(--primary-color)] mx-auto mb-4" src="../../visuals/user_profile.webp"/>
+                        <p class="text-lg font-medium text-[var(--text-primary)]">Tebogo Mabhele.</p>
+                        <p class="text-base text-[var(--text-secondary)]">Plumber</p>
                     </div>
-
+                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 text-center card-hover">
+                        <img alt="David L." class="w-24 h-24 rounded-full object-cover border-2 border-[var(--primary-color)] mx-auto mb-4" src="../../visuals/user_profile.webp"/>
+                        <p class="text-lg font-medium text-[var(--text-primary)]">Chilwane Innocent</p>
+                        <p class="text-base text-[var(--text-secondary)]">Gardener</p>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 text-center card-hover">
+                        <img alt="Emily R." class="w-24 h-24 rounded-full object-cover border-2 border-[var(--primary-color)] mx-auto mb-4" src="../../visuals/user_profile.webp"/>
+                        <p class="text-lg font-medium text-[var(--text-primary)]">Lufuno Mukwevho</p>
+                        <p class="text-base text-[var(--text-secondary)]">Handy Man</p>
+                    </div>
+                </div>
             </div>
 
             <!-- Quick Hire Actions -->
