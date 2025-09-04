@@ -289,7 +289,7 @@ router.post("/jobs/:jobId/hire/:applicantId",ensureAuth ,async (req, res) => {
       .populate('messages.sender', 'name profileImage'); // optional
 
     // 6. Redirect to chat page
-    res.redirect(`/employer/chat/${chat._id}`);
+    res.redirect(`/employer/${chat._id}`);
   } catch (error) {
     res.status(500).send("Error hiring applicant");
   }
