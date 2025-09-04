@@ -56,22 +56,25 @@
             <div class="mb-8">
                 <h2 class="text-2xl font-semibold text-[var(--text-primary)] mb-4">Smart Suggestions</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 text-center card-hover">
-                        <img alt="Sarah M." class="w-24 h-24 rounded-full object-cover border-2 border-[var(--primary-color)] mx-auto mb-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjUwWCGCtRvl6SCHqb0RQjbgm6oGgceEEhaDGy8e1-_jRmNwZYaBou6vnvQ2Z6xv1F5F96FxvPSwxPfcmMUG7oCRgTFkEKx2oxbOjps6izD8ZdtEohUKkj5UMPeTdH8V3OGKEnoD0XOG0zNBpYe-C5SmB6bKsE8O50bfp-_zImbPrwrLfTn8enyxjMULQMgLSt2ihNEbFok_2vloe6cOP2kU0GOA2vw_43QbDTpco4V0TLWMsfXSG91XBN3JJKfrSn0bn88pnxac_b"/>
-                        <p class="text-lg font-medium text-[var(--text-primary)]">Sarah M.</p>
-                        <p class="text-base text-[var(--text-secondary)]">Graphic Designer</p>
+                    <% if (smartSuggestions && smartSuggestions.length > 0) { %>
+                        <% smartSuggestions.forEach(f => { %>
+                        <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 text-center card-hover">
+                            <img 
+                            class="w-24 h-24 rounded-full object-cover border-2 border-[var(--primary-color)] mx-auto mb-4"
+                            src="<%= f.avatar || 'https://via.placeholder.com/150' %>" 
+                            alt="<%= f.username %>"
+                            />
+                            <p class="text-lg font-medium text-[var(--text-primary)]"><%= f.username %></p>
+                            <p class="text-base text-[var(--text-secondary)]">
+                            <%= f.skills.length > 0 ? f.skills.join(', ') : 'No skills listed' %>
+                            </p>
+                        </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p class="text-[var(--text-secondary)]">No smart suggestions available yet.</p>
+                    <% } %>
                     </div>
-                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 text-center card-hover">
-                        <img alt="David L." class="w-24 h-24 rounded-full object-cover border-2 border-[var(--primary-color)] mx-auto mb-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4gHqL8Bugy08z6vo0kPl70j1aANLA-TOiAtLB4EeJwNiSt4YWVakIXkBFFRvzVBrvG-GXrH8y8-1OvDl2WhKwCJWMZUaP_HzET4xMW8_qJ3TpcKZY4Yph5qgzVFjTvLBUaO36xIjevO4WwvUUwe3of8RdgTGzHtICcXXzrT05Vnojr_t-3-FooLw05c8pAmSAR1s_rcuB0j-bBNviADI6D1sLyNWi9SikNMj1DujjShfShhtqcXRuyjx2jmElkgc3BVpbNFdBRO5Z"/>
-                        <p class="text-lg font-medium text-[var(--text-primary)]">David L.</p>
-                        <p class="text-base text-[var(--text-secondary)]">Web Developer</p>
-                    </div>
-                    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 text-center card-hover">
-                        <img alt="Emily R." class="w-24 h-24 rounded-full object-cover border-2 border-[var(--primary-color)] mx-auto mb-4" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxWLCKkwyFV-I86IMoY89KgzRGOgvTgDz51aixBkq2i6VCHL0L2AmvzQGWJptfloNM1HRbKStmmdwu3-ipbayHEczthHJdVAOfYrGnBgMIyLrlJGoAwAxv1QQG0HneYrGnhzXqqLtDcDboclfkL8PqKBNGg2Ros4xJktIQcyZkwuGP0BJNu30RhcfYqh59_g112HwTEFj50ee7dbk5VHqrPya-vSZRlG1CzzFjBZ_-Aqhy3lzaZIsMp2u9wo3KWkd4REzTsvOHsqaS"/>
-                        <p class="text-lg font-medium text-[var(--text-primary)]">Emily R.</p>
-                        <p class="text-base text-[var(--text-secondary)]">Social Media Manager</p>
-                    </div>
-                </div>
+
             </div>
 
             <!-- Quick Hire Actions -->

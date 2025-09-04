@@ -81,7 +81,7 @@ router.post('/profile/complete',ensureAuth,async(req,res)=>{
     }
     else if (updatedUser.role=='client') {
       const jobs = await Job.find({}); // Fetch all jobs for clients
-      return res.render('employerhome', { user: updatedUser, jobs });
+      return res.render('employerhome', { user: updatedUser, jobs, smartSuggestions: []});
     }
   } catch (err) {
     console.error('Error updating user profile:', err);
