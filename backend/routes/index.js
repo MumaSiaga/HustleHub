@@ -4,11 +4,15 @@ const router = express.Router();
 const { ensureAuth, redirectIfLoggedIn,redirectIfNotAdmin } = require('../middleware/authmiddleware');
 const User = require('../model/User');
 const Job = require("../model/job");
+const Chat=require('../model/chat');
+const Product =require('../model/Product');
+const mongoose = require("mongoose");
+
 
 const bcrypt = require('bcrypt');
 // const adminController = require('../controllers/adminController');
 
-router.post('/logout', (req, res) => {
+router.post('/logout',ensureAuth,(req, res) => {
   req.logout(() => {
     req.session.destroy(err => {
       if (err) console.error('Session destruction error:', err);
@@ -17,7 +21,7 @@ router.post('/logout', (req, res) => {
   });
 });
 
-router.post('/admin/login', async (req, res) => {
+router.post('/admin/login',ensureAuth, async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -80,7 +84,7 @@ router.post('/profile/complete',ensureAuth,async(req,res)=>{
     }
     else if (updatedUser.role=='client') {
       const jobs = await Job.find({}); // Fetch all jobs for clients
-      return res.render('employerhome', { user: updatedUser, jobs, smartSuggestions: []});
+      return res.render('employerhome', { user: updatedUser, jobs });
     }
   } catch (err) {
     console.error('Error updating user profile:', err);

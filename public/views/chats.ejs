@@ -23,10 +23,10 @@
   </style>
 </head>
 <body class="bg-[var(--background-color)] text-[var(--text-primary)]">
-  <%- include('partials/nav') %>
+  <%- include('partials/navigation') %>
 
   <section class="main_content flex h-screen">
-    <%- include('partials/bar') %>
+    <%- include('partials/topbar') %>
 
     <!-- Chat list panel -->
     <aside class="w-80 border-l border-gray-200 overflow-y-auto bg-white">
@@ -42,7 +42,7 @@
                  const lastMsg = lastMsgObj ? lastMsgObj.content : "No messages yet";
                  const lastTime = lastMsgObj ? new Date(lastMsgObj.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : "";
             %>
-            <a href="/chat/<%= chatItem._id %>" class="flex items-center gap-4 p-4 hover:bg-[var(--secondary-color)] rounded-lg transition-colors">
+            <a href="/service/<%= chatItem._id %>" class="flex items-center gap-4 p-4 hover:bg-[var(--secondary-color)] rounded-lg transition-colors">
               <div class="w-14 h-14 bg-center bg-no-repeat bg-cover rounded-full" 
                    style='background-image: url("<%= other?.profileImage || "../visuals/profile pics.jpg" %>");'></div>
               <div class="flex-1 overflow-hidden">
@@ -66,6 +66,20 @@
       <div class="p-4 border-b border-gray-200 flex items-center gap-4">
         <div class="w-12 h-12 rounded-full bg-center bg-cover" style="background-image: url('<%= otherUser?.profileImage || 'https://via.placeholder.com/150/2563eb/ffffff?text=User' %>');"></div>
         <h2 class="font-semibold text-lg"><%= otherUser?.username || "Unknown" %></h2>
+        <form action="/service/<%= chat._id %>?_method=DELETE" class="ml-auto" method="POST">
+    <button type="submit" class="text-gray-500 hover:text-red-600 transition" title="Delete Chat">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           fill="none"
+           viewBox="0 0 24 24"
+           stroke-width="1.5"
+           stroke="currentColor"
+           class="w-6 h-6">
+        <path stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M6 7h12M9 7V4h6v3m2 0v12a2 2 0 01-2 2H8a2 2 0 01-2-2V7h12z" />
+      </svg>
+    </button>
+  </form>
       </div>
 
       <!-- Chat messages -->
