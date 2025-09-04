@@ -372,33 +372,39 @@ router.get("/marketplace", async (req, res) => {
 
 
 // Add new product with image upload
-router.post("/marketplace", ensureAuth, async (req, res) => {
-  try {
-    const { name, description, price, category, condition } = req.body;
+// Add new product with image upload
+router.post(
+  "/marketplace",
+  ensureAuth,
+  upload.single("image"),   // ✅ FIX: attach multer here
+  async (req, res) => {
+    try {
+      const { name, description, price, category, condition } = req.body;
 
-    // Create a new product and attach the seller ID
-    const newProduct = new Product({
-      name,
-      description,
-      price,
-      category,
-      condition,
-      seller: req.user._id // <-- This stores the current user's ID
-    });
+      // Create a new product and attach the seller ID
+      const newProduct = new Product({
+        name,
+        description,
+        price,
+        category,
+        condition,
+        seller: req.user._id
+      });
 
-    // Handle image if uploaded
-    if (req.file) {
-      newProduct.imageUrl = `/uploads/${req.file.filename}`;
+      // Handle image if uploaded
+      if (req.file) {
+        newProduct.imageUrl = `/uploads/${req.file.filename}`; // ✅ save relative path
+      }
+
+      await newProduct.save();
+      res.redirect("/employer/marketplace");
+    } catch (error) {
+      console.error("❌ Error creating product:", error);
+      res.redirect("/employer/marketplace");
     }
-
-    await newProduct.save();
-
-    res.redirect("/employer/marketplace");
-  } catch (error) {
-    console.error("Error creating product:", error);
-    res.redirect("/employer/marketplace");
   }
-});
+);
+
 
 
 router.post("/marketplace/delete/:id", ensureAuth, async (req, res) => {
