@@ -128,13 +128,13 @@ router.get("/marketplace", ensureAuth, async (req, res) => {
 });
 
 // Employer Home
-router.get('/home', async (req, res) => {
+// Employer Home
+router.get('/home', ensureAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
     if (!user) {
       return res.render('employerhome', { jobs: [], smartSuggestions: [] });
-
     }
 
     // Extract emails from user's contacts
@@ -143,7 +143,7 @@ router.get('/home', async (req, res) => {
     // Find employer IDs for these emails
     const employerIds = await User.find({ email: { $in: contactEmails } }).distinct('_id');
 
-    // Find jobs posted by these employers
+    // Find jobs posted by these employers (for smart suggestions only)
     const jobsByContacts = await Job.find({ employerid: { $in: employerIds } });
 
     // Fetch freelancers who were hired for jobs
@@ -157,8 +157,8 @@ router.get('/home', async (req, res) => {
       )
     );
 
-    // Fetch all jobs for stats
-    const jobs = await Job.find();
+    // ✅ Fetch only this employer's jobs for stats
+    const jobs = await Job.find({ employerid: req.user._id });
 
     res.render('employerhome', {
       jobs,
@@ -169,8 +169,6 @@ router.get('/home', async (req, res) => {
     res.render('employerhome', { jobs: [], smartSuggestions: [] });
   }
 });
-
-
 
 // Messages Page
 router.get('/messages',ensureAuth, (req, res) => {
