@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Applicants</title>
+  <link rel="stylesheet" href="../styles/nav.css">
+  <link rel="stylesheet" href="../styles/applicants.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Noto+Sans:wght@400;500;700;900&display=swap" rel="stylesheet"/>
+</head>
+<body>
+  <%- include('partials/nav') %>
+  
+  <section class="main_content" id="mainContent">
+    <%- include('partials/bar') %>
+
+    <main class="container">
+      <header class="page-header">
+        <h1>Applicants</h1>
+        <p>Browse and interact with your applicants.</p>
+      </header>
+
+      <!-- Applicants -->
+    <section class="providers">
+  <div id="applicantsGrid" class="freelancer-grid">
+    <% if (jobs && jobs.length > 0) { %>
+      <% jobs.forEach(job => { %>
+        <% if (job.applicants && job.applicants.length > 0) { %>
+          <% job.applicants.forEach(applicant => { %>
+            <article class="freelancer-card">
+              <header class="freelancer-header">
+                <img class="profile-img" src="<%= applicant.user.profileImage || '../../visuals/user_profile.webp' %>" alt="<%= applicant.name %>"/>
+                <div>
+                  <h3 class="freelancer-name"><%= applicant.name %></h3>
+                  <p class="skills">
+                    <%= applicant.skills && applicant.skills.length > 0 ? applicant.skills.join(', ') : 'No skills listed' %>
+                  </p>
+                  <p class="location"><%= applicant.location %></p>
+                </div>
+              </header>
+
+              <% if (applicant.skills && applicant.skills.length > 0) { %>
+                <p class="badge">Verified Skills</p>
+              <% } %>
+
+              <footer class="card-footer">
+                <a href="/employer/services/<%= applicant.user._id %>" class="btn-profile">View Profile</a>
+                <form action="/employer/jobs/<%= job._id %>/hire/<%= applicant._id %>" method="POST" style="display:inline;">
+  <button type="submit" class="btn-profile" style="background-color: rgb(0, 153, 255); color: white;">
+    Hire
+  </button>
+</form>
+
+              </footer>
+            </article>
+          <% }) %>
+        <% } %>
+      <% }) %>
+    <% } else { %>
+      <p>No applicants yet for your jobs.</p>
+    <% } %>
+
+  </div>
+
+</section>
+ 
+  <script src="../scripts/bar.js"></script>
+</body>
+</html>

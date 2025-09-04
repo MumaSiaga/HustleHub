@@ -3,15 +3,19 @@ const router = express.Router();
 const Job = require("../model/job");
 const User=require('../model/User');
 const ForumPost = require('../model/forum');
+const Chat=require('../model/chat')
 const getCityFromCoordinates = require('../middleware/reverseGeo');
+const { ensureAuth } = require('../middleware/authmiddleware');
+
+
 const Product = require("../model/Product");
 const multer = require("multer");
 const path = require("path");
 
-// Multer storage
+
 const fs = require('fs');
 
-// Multer storage
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const dir = "public/uploads/";
@@ -40,6 +44,7 @@ router.get('/home', async (req, res) => {
 
     if (!user) {
       return res.render('employerhome', { jobs: [], smartSuggestions: [] });
+
     }
 
     // Extract emails from user's contacts
@@ -78,14 +83,14 @@ router.get('/home', async (req, res) => {
 
 
 // Messages Page
-router.get('/messages', (req, res) => {
-    res.render('messages'); // this will render messages.ejs
+router.get('/messages',ensureAuth, (req, res) => {
+    res.redirect('/chat'); // this will render messages.ejs
 });
 
 
 
 // Payments Page
-router.get('/payments', (req, res) => {
+router.get('/payments',ensureAuth, (req, res) => {
     res.render('payments'); // this will render payments.ejs
 });
 
@@ -94,11 +99,20 @@ router.get('/payments', (req, res) => {
 
 // routes/employer.js
 // routes/employer.js
-router.post("/jobs", async (req, res) => {
+router.post("/jobs",ensureAuth,async (req, res) => {
   try {
     const { id, title, description, salary, contact, latitude, longitude } = req.body;
 
-    let updateData = { title, description, salary, contact };
+    // Get employer id from logged-in user
+    const employer = req.user._id;
+
+    let updateData = { 
+      title, 
+      description, 
+      salary, 
+      contact, 
+      employerid: employer // 👈 add employerid here
+    };
 
     // Only if new coordinates were provided
     if (latitude && longitude) {
@@ -134,7 +148,8 @@ router.post("/jobs", async (req, res) => {
         salary,
         contact,
         location,
-        city
+        city,
+        employerid: employer // 👈 add employerid here as well
       });
       await job.save();
     }
@@ -146,17 +161,85 @@ router.post("/jobs", async (req, res) => {
   }
 });
 
+// Hire applicant and ensure chat is properly populated
+router.post("/jobs/:jobId/hire/:applicantId",ensureAuth ,async (req, res) => {
+  try {
+
+
+    const { jobId, applicantId } = req.params;
+    const employerId = req.user._id;
+ 
+
+    // 1. Find the job
+    const job = await Job.findById(jobId);
+    if (!job) return res.status(404).send("Job not found");
+ 
+
+    // 2. Find the applicant subdocument
+    const applicant = job.applicants.id(applicantId);
+    if (!applicant) return res.status(404).send("Applicant not found");
+    
+
+    // 3. Update status to "hired"
+    applicant.status = "hired";
+    await job.save();
+  
+
+
+    let chat = await Chat.findOne({
+      job: job._id,
+      participants: { $all: [employerId, applicant.user] }
+    });
+
+    if (!chat) {
+      chat = new Chat({
+        job: job._id,
+        participants: [employerId, applicant.user],
+        messages: []
+      });
+      await chat.save();
+      
+    } else {
+     
+    }
+
+    // 5. Populate participants so EJS can read names & profileImages
+    chat = await Chat.findById(chat._id)
+      .populate('participants', 'name profileImage')
+      .populate('messages.sender', 'name profileImage'); // optional
+
+    // 6. Redirect to chat page
+    res.redirect(`/chat/${chat._id}`);
+  } catch (error) {
+    res.status(500).send("Error hiring applicant");
+  }
+});
+
+
 
 
 
 // GET all jobs
-router.get("/jobs", async (req, res) => {
+router.get("/jobs",ensureAuth ,async (req, res) => {
   try {
     const jobs = await Job.find();
     res.render("jobs", { jobs });
   } catch (error) {
     console.error(error);
     res.status(500).send("Error loading jobs");
+  }
+});
+
+
+
+
+router.get("/applicants",ensureAuth, async (req, res) => {
+  try {
+    const jobs=await Job.find({employerid:req.user._id});
+    res.render("applicants", { jobs });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error loading applicants");
   }
 });
 
@@ -182,7 +265,7 @@ router.get("/jobs", async (req, res) => {
 
 
 // DELETE job
-router.post("/jobs/delete/:id", async (req, res) => {
+router.post("/jobs/delete/:id",ensureAuth ,async (req, res) => {
   try {
     await Job.findByIdAndDelete(req.params.id);
     res.redirect("/employer/jobs");
@@ -195,7 +278,7 @@ router.post("/jobs/delete/:id", async (req, res) => {
 
 
 // Forum page
-router.get('/forum', async (req, res) => {
+router.get('/forum',ensureAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
@@ -213,7 +296,7 @@ router.get('/forum', async (req, res) => {
 });
 
 // Add new post
-router.post('/forum/post', async (req, res) => {
+router.post('/forum/post',ensureAuth, async (req, res) => {
   try {
     const { title, content } = req.body;
     const post = new ForumPost({
@@ -230,7 +313,7 @@ router.post('/forum/post', async (req, res) => {
 });
 
 // Add comment
-router.post('/forum/comment/:postId', async (req, res) => {
+router.post('/forum/comment/:postId',ensureAuth ,async (req, res) => {
   try {
     const { content } = req.body;
     const post = await ForumPost.findById(req.params.postId);
@@ -243,7 +326,7 @@ router.post('/forum/comment/:postId', async (req, res) => {
   }
 });
 // 1. List all freelancers (must be **before** the :id route)
-router.get('/services', async (req, res) => {
+router.get('/services',ensureAuth, async (req, res) => {
   try {
     const freelancers = await User.find({ role: 'freelancer' });
     res.render('services', { freelancers });
@@ -254,7 +337,7 @@ router.get('/services', async (req, res) => {
 });
 
 // 2. Freelancer profile page
-router.get('/services/:id', async (req, res) => {
+router.get('/services/:id',ensureAuth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
 
