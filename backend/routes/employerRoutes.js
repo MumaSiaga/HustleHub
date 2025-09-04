@@ -11,7 +11,6 @@ const { ensureAuth } = require('../middleware/authmiddleware');
 const Product = require("../model/Product");
 const multer = require("multer");
 const path = require("path");
-const { ensureAuth } = require('../middleware/authmiddleware');
 
 
 const fs = require('fs');
