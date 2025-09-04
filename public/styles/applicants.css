@@ -1,0 +1,192 @@
+:root {
+  --primary-color: #1173d4;
+  --secondary-color: #dbeafe;
+  --background-color: #ffffff;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --accent-color: #93c5fd;
+}
+
+body {
+  font-family: "Inter", sans-serif;
+  background: var(--background-color);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.page-header h1 {
+  font-size: 2.25rem;
+  font-weight: 900;
+  margin-bottom: 0.5rem;
+}
+
+.page-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.search-section {
+  margin: 2rem 0;
+}
+
+.search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-secondary);
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.freelancer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.freelancer-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.freelancer-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.profile-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.freelancer-name {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.skills {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.badge {
+  display: inline-block;
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+}
+
+.btn-profile {
+  display: block;
+  text-align: center;
+  background: var(--secondary-color);
+  color: var(--primary-color);
+  border: 1px solid var(--primary-color);
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.btn-profile:hover {
+  background: var(--accent-color);
+  color: #fff;
+}
+
+.card-footer {
+  margin-top: auto;
+}
+
+/* ---------------- Responsive Tweaks ---------------- */
+
+/* Tablets */
+@media (max-width: 900px) {
+  .container {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 2rem;
+  }
+
+  .freelancer-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .page-header h1 {
+    font-size: 1.75rem;
+  }
+
+  .page-header p {
+    font-size: 0.95rem;
+  }
+
+  .freelancer-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-img {
+    width: 72px;
+    height: 72px;
+  }
+
+  .btn-profile {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+}
+
+/* Very Small Devices */
+@media (max-width: 400px) {
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .search-bar input {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.6rem 0.6rem 2rem;
+  }
+
+  .freelancer-grid {
+    grid-template-columns: 1fr;
+  }
+}

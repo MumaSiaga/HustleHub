@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chats</title>
+  <link rel="stylesheet" href="../styles/nav.css">
+  <link rel="stylesheet" href="../styles/chat.css">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <style type="text/tailwindcss">
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #e0f2fe;
+      --background-color: #f9fafb;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+    }
+    body {
+      font-family: "Be Vietnam Pro", sans-serif;
+      background-color: var(--background-color);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body class="bg-[var(--background-color)] text-[var(--text-primary)]">
+  <%- include('partials/nav') %>
+
+  <section class="main_content flex h-screen">
+    <%- include('partials/bar') %>
+
+    <!-- Chat list panel -->
+    <aside class="w-80 border-l border-gray-200 overflow-y-auto bg-white">
+      <div class="p-4">
+        <h2 class="text-xl font-bold mb-4">Chats</h2>
+        <input type="text" placeholder="Search chats..." class="w-full rounded-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] mb-4"/>
+        
+        <div class="divide-y divide-gray-200">
+          <% if (chats && chats.length > 0) { %>
+            <% chats.forEach(chatItem => { 
+                 const other = chatItem.participants.find(p => p._id.toString() !== currentUserId.toString());
+                 const lastMsgObj = chatItem.messages?.length ? chatItem.messages[chatItem.messages.length-1] : null;
+                 const lastMsg = lastMsgObj ? lastMsgObj.content : "No messages yet";
+                 const lastTime = lastMsgObj ? new Date(lastMsgObj.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : "";
+            %>
+            <a href="/chat/<%= chatItem._id %>" class="flex items-center gap-4 p-4 hover:bg-[var(--secondary-color)] rounded-lg transition-colors">
+              <div class="w-14 h-14 bg-center bg-no-repeat bg-cover rounded-full" 
+                   style='background-image: url("<%= other?.profileImage || "../visuals/profile pics.jpg" %>");'></div>
+              <div class="flex-1 overflow-hidden">
+                <p class="font-semibold truncate"><%= other?.username || "Unknown" %></p>
+                <p class="text-sm text-[var(--text-secondary)] truncate"><%= lastMsg %></p>
+              </div>
+              <p class="text-xs text-[var(--text-secondary)] flex-shrink-0"><%= lastTime %></p>
+            </a>
+            <% }) %>
+          <% } else { %>
+            <p class="text-center text-[var(--text-secondary)] py-4">No chats yet</p>
+          <% } %>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Chat panel -->
+    <main class="flex-1 flex flex-col bg-white border-l border-gray-200">
+      <% if (chat) { %>
+      <!-- Chat header -->
+      <div class="p-4 border-b border-gray-200 flex items-center gap-4">
+        <div class="w-12 h-12 rounded-full bg-center bg-cover" style="background-image: url('<%= otherUser?.profileImage || 'https://via.placeholder.com/150/2563eb/ffffff?text=User' %>');"></div>
+        <h2 class="font-semibold text-lg"><%= otherUser?.username || "Unknown" %></h2>
+      </div>
+
+      <!-- Chat messages -->
+      <div id="messages" class="flex-1 overflow-y-auto p-4 space-y-4 bg-[var(--background-color)]">
+        <% chat.messages.forEach(msg => { 
+            const sender = msg.sender; // populated
+            const isMe = sender._id.toString() === currentUserId.toString();
+        %>
+          <div class="flex <%= isMe ? 'justify-end' : 'justify-start' %>">
+            <% if (!isMe) { %>
+              <div class="w-10 h-10 rounded-full bg-center bg-cover mr-2" 
+                   style="background-image: url('<%= sender?.profileImage || 'https://via.placeholder.com/150/2563eb/ffffff?text=User' %>');"></div>
+            <% } %>
+            <div class="max-w-xs px-4 py-2 rounded-2xl <%= isMe ? 'bg-blue-600 text-white' : 'bg-gray-200 text-[var(--text-primary)]' %>">
+              <p><%= msg.content %></p>
+              <span class="text-xs text-gray-400 block text-right mt-1">
+                <%= new Date(msg.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) %>
+              </span>
+            </div>
+            <% if (isMe) { %>
+              <div class="w-10 h-10 rounded-full bg-center bg-cover ml-2" 
+                   style="background-image: url('<%= currentUser?.profileImage || 'https://via.placeholder.com/150/2563eb/ffffff?text=Me' %>');"></div>
+            <% } %>
+          </div>
+        <% }) %>
+      </div>
+
+      <!-- Message input -->
+      <form id="messageForm" class="p-4 border-t border-gray-200 flex gap-2">
+        <input type="text" id="messageInput" placeholder="Type a message..." class="flex-1 rounded-full px-4 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]"/>
+        <button type="submit" class="bg-[var(--primary-color)] text-white px-4 py-2 rounded-full hover:bg-blue-700 transition-colors">Send</button>
+      </form>
+      <% } else { %>
+        <div class="flex-1 flex items-center justify-center text-center text-[var(--text-secondary)]">
+          <div>
+            <h3 class="text-2xl font-bold mb-2">Select a conversation</h3>
+            <p>Choose from your existing conversations, or start a new one.</p>
+          </div>
+        </div>
+      <% } %>
+    </main>
+  </section>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    <% if (chat) { %>
+      const socket = io();
+      const chatId = "<%= chat._id %>";
+      const userId = "<%= currentUserId %>";
+      const messagesDiv = document.getElementById('messages');
+      const currentUserImage = "<%= currentUser?.profileImage || 'https://via.placeholder.com/150/2563eb/ffffff?text=Me' %>";
+      const otherUserImage = "<%= otherUser?.profileImage || 'https://via.placeholder.com/150/2563eb/ffffff?text=User' %>";
+
+      socket.emit('joinRoom', { chatId, userId });
+
+      document.getElementById('messageForm').addEventListener('submit', e => {
+        e.preventDefault();
+        const msgInput = document.getElementById('messageInput');
+        const msg = msgInput.value.trim();
+        if (!msg) return;
+        socket.emit('sendMessage', { chatId, senderId: userId, message: msg });
+        msgInput.value = '';
+      });
+
+      socket.on('receiveMessage', ({ senderId, message, timestamp, senderImage }) => {
+        const div = document.createElement('div');
+        const isMe = senderId === userId;
+        div.className = 'flex ' + (isMe ? 'justify-end' : 'justify-start');
+        div.innerHTML = `
+          ${!isMe ? `<div class="w-10 h-10 rounded-full bg-center bg-cover mr-2" style="background-image: url('${senderImage || otherUserImage}');"></div>` : ''}
+          <div class="max-w-xs px-4 py-2 rounded-2xl ${isMe ? 'bg-blue-600 text-white' : 'bg-gray-200 text-[var(--text-primary)]'}">
+            <p>${message}</p>
+            <span class="text-xs text-gray-400 block text-right mt-1">${new Date(timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span>
+          </div>
+          ${isMe ? `<div class="w-10 h-10 rounded-full bg-center bg-cover ml-2" style="background-image: url('${currentUserImage}');"></div>` : ''}
+        `;
+        messagesDiv.appendChild(div);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      });
+    <% } %>
+  </script>
+</body>
+</html>
