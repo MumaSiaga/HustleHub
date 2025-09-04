@@ -7,36 +7,125 @@ const Chat=require('../model/chat')
 const getCityFromCoordinates = require('../middleware/reverseGeo');
 const { ensureAuth } = require('../middleware/authmiddleware');
 
-
+////////////////////////////////////////////////////////////////////////////////////
 const Product = require("../model/Product");
 const multer = require("multer");
 const path = require("path");
-const { ensureAuth } = require('../middleware/authmiddleware');
 
 
 const fs = require('fs');
 
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = "public/uploads/";
-    // Check if folder exists; if not, create it
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
+  destination: (req, file, cb) => {
+    const uploadDir = "public/uploads"
+    if (!fs.existsSync(uploadDir)){fs.mkdirSync(uploadDir, { recursive: true });} 
+    cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
+/////////////////////////////////////////////////////////////////////////////
+
+// --- Post new product ---
+router.post("/marketplace", ensureAuth, upload.single("image"), async (req, res) => {
+  try {
+    const product = new Product({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      condition: req.body.condition,
+      seller: req.user._id,
+    });
+
+    if(req.file){
+      product.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    await product.save();
+    res.redirect("/employer/marketplace");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error posting product");
   }
 });
 
-const upload = multer({ storage: storage });
+// --- Edit product (only owner) ---
+router.post("/marketplace/edit/:id", ensureAuth, upload.single("image"), async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) return res.status(404).send("Product not found");
+    if (product.seller.toString() !== req.user._id.toString())
+      return res.status(403).send("Not authorized");
+
+    // Update fields
+    product.name = req.body.name;
+    product.description = req.body.description;
+    product.price = req.body.price;
+    product.category = req.body.category;
+    product.condition = req.body.condition;
+
+    if (req.file) {
+      product.imageUrl = `/uploads/products/${req.file.filename}`;
+    }
+
+    await product.save();
+    res.redirect("/employer/marketplace");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error editing product");
+  }
+});
+
+// --- Delete product (only owner) ---
+router.post("/marketplace/delete/:id", ensureAuth, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) return res.status(404).send("Product not found");
+    
+    if (product.seller.toString() !== req.user._id.toString())
+      return res.status(403).send("Not authorized");
 
 
+        // ✅ Delete image from disk if it exists and isn't a placeholder
+    if (product.imageUrl && !product.imageUrl.startsWith("http")) {
+      // Build the full path
+      const imagePath = path.join(__dirname, "..", product.imageUrl);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath); // delete file
+      }
+    }
 
 
+    await product.deleteOne();
+    res.redirect("/employer/marketplace");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error deleting product");
+  }
+});
+
+/////////////////////////////////////////////////////////////////////////////
+
+router.get("/marketplace", ensureAuth, async (req, res) => {
+  try {
+    const products = await Product.find({})
+      .populate("seller", "username email")
+      .sort({ createdAt: -1 });
+    res.render("marketplace", { products, user: req.user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading marketplace");
+  }
+});
 
 // Employer Home
 router.get('/home', async (req, res) => {
@@ -350,120 +439,6 @@ router.get('/services/:id',ensureAuth, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
-  }
-});
-
-
-// ------------------ MARKETPLACE ------------------
-
-// Show all products
-// Show all products
-router.get("/marketplace", async (req, res) => {
-  try {
-    const products = await Product.find()
-      .sort({ createdAt: -1 })
-      .populate("seller", "username"); // ✅ get seller info
-
-    res.render("marketplace", { products, user: req.user || null }); // ✅ pass logged in user
-  } catch (error) {
-    console.error("❌ Error loading products:", error);
-    res.render("marketplace", { products: [], user: req.user || null });
-  }
-});
-
-
-// Add new product with image upload
-router.post("/marketplace", ensureAuth, async (req, res) => {
-  try {
-    const { name, description, price, category, condition } = req.body;
-
-    // Create a new product and attach the seller ID
-    const newProduct = new Product({
-      name,
-      description,
-      price,
-      category,
-      condition,
-      seller: req.user._id // <-- This stores the current user's ID
-    });
-
-    // Handle image if uploaded
-    if (req.file) {
-      newProduct.imageUrl = `/uploads/${req.file.filename}`;
-    }
-
-    await newProduct.save();
-
-    res.redirect("/employer/marketplace");
-  } catch (error) {
-    console.error("Error creating product:", error);
-    res.redirect("/employer/marketplace");
-  }
-});
-
-
-router.post("/marketplace/delete/:id", ensureAuth, async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).send("Product not found");
-
-    // Check if logged-in user is the creator
-    if (product.seller.toString() !== req.user._id.toString()) {
-      return res.status(403).send("You are not allowed to delete this product");
-    }
-
-    await Product.findByIdAndDelete(req.params.id);
-    res.redirect("/employer/marketplace");
-  } catch (error) {
-    console.error("❌ Error deleting product:", error);
-    res.status(500).send("Error deleting product");
-  }
-});
-
-// GET Edit Product Form (no user check)
-router.get("/marketplace/edit/:id", ensureAuth, async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).send("Product not found");
-
-    if (product.seller.toString() !== req.user._id.toString()) {
-      return res.status(403).send("You are not allowed to edit this product");
-    }
-
-    res.render("edit_product", { product });
-  } catch (err) {
-    console.error("❌ Error loading edit product form:", err);
-    res.status(500).send("Server error");
-  }
-});
-
-
-// POST update product (no user check)
-router.post("/marketplace/edit/:id", ensureAuth, upload.single("image"), async (req, res) => {
-  try {
-    const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).send("Product not found");
-
-    if (product.seller.toString() !== req.user._id.toString()) {
-      return res.status(403).send("You are not allowed to update this product");
-    }
-
-    const { name, description, price, category, condition } = req.body;
-    product.name = name;
-    product.description = description;
-    product.price = price;
-    product.category = category;
-    product.condition = condition;
-
-    if (req.file) {
-      product.imageUrl = `/uploads/${req.file.filename}`;
-    }
-
-    await product.save();
-    res.redirect("/employer/marketplace");
-  } catch (err) {
-    console.error("❌ Error updating product:", err);
-    res.status(500).send("Server error");
   }
 });
 
