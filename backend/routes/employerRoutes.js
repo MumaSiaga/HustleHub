@@ -188,12 +188,10 @@ router.get('/payments',ensureAuth, (req, res) => {
 
 
 // routes/employer.js
-// routes/employer.js
-router.post("/jobs",ensureAuth,async (req, res) => {
+// POST create or update job
+router.post("/jobs", ensureAuth, async (req, res) => {
   try {
     const { id, title, description, salary, contact, latitude, longitude } = req.body;
-
-    // Get employer id from logged-in user
     const employer = req.user._id;
 
     let updateData = { 
@@ -201,35 +199,29 @@ router.post("/jobs",ensureAuth,async (req, res) => {
       description, 
       salary, 
       contact, 
-      employerid: employer // 👈 add employerid here
+      employerid: employer // ✅ always save employerid
     };
 
-    // Only if new coordinates were provided
     if (latitude && longitude) {
       const location = {
         type: "Point",
         coordinates: [parseFloat(longitude), parseFloat(latitude)]
       };
-
       const city = await getCityFromCoordinates(latitude, longitude);
       updateData.location = location;
       updateData.city = city;
     }
 
     if (id) {
-      // Update existing job
       await Job.findByIdAndUpdate(id, updateData);
     } else {
-      // Create new job (must have location!)
       if (!latitude || !longitude) {
         return res.status(400).send("Location required for new jobs");
       }
-
       const location = {
         type: "Point",
         coordinates: [parseFloat(longitude), parseFloat(latitude)]
       };
-
       const city = await getCityFromCoordinates(latitude, longitude);
 
       const job = new Job({
@@ -239,7 +231,7 @@ router.post("/jobs",ensureAuth,async (req, res) => {
         contact,
         location,
         city,
-        employerid: employer // 👈 add employerid here as well
+        employerid: employer // ✅ save employerid
       });
       await job.save();
     }
@@ -250,6 +242,7 @@ router.post("/jobs",ensureAuth,async (req, res) => {
     res.status(500).send("Error posting/updating job");
   }
 });
+
 
 // Hire applicant and ensure chat is properly populated
 router.post("/jobs/:jobId/hire/:applicantId",ensureAuth ,async (req, res) => {
@@ -309,13 +302,13 @@ router.post("/jobs/:jobId/hire/:applicantId",ensureAuth ,async (req, res) => {
 
 
 
-// GET all jobs
-router.get("/jobs",ensureAuth ,async (req, res) => {
+// GET all jobs for logged-in employer only
+router.get("/jobs", ensureAuth, async (req, res) => {
   try {
-    const jobs = await Job.find();
+    const jobs = await Job.find({ employerid: req.user._id }); // ✅ FIXED
     res.render("jobs", { jobs });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error loading jobs:", error);
     res.status(500).send("Error loading jobs");
   }
 });
