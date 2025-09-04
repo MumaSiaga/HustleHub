@@ -18,7 +18,6 @@ app.use(express.static("public"));
 app.use('/styles', express.static(path.join(__dirname,'public','styles')));
 app.use('/scripts', express.static(path.join(__dirname,'public','scripts')));
 app.use('/visuals', express.static(path.join(__dirname,'visuals')));
-
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname,'public','views'));
 app.set('trust proxy', 1);

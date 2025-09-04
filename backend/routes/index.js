@@ -62,7 +62,6 @@ router.post('/setup', ensureAuth, async (req, res) => {
       { role },
       { new: true }
     );
-
     return res.render('finish-profile',{role: updatedUser.role});
   } catch (err) {
     console.error('Error updating user profile:', err);
@@ -79,7 +78,7 @@ router.post('/profile/complete',ensureAuth,async(req,res)=>{
       { location, skills, about: bio },
       { new: true }
     );
-
+    console.log(updatedUser);
     if (updatedUser.role=='freelancer') {
       return res.render('serviceHome', { user: updatedUser });
     }

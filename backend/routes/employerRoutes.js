@@ -7,7 +7,7 @@ const Chat=require('../model/chat')
 const getCityFromCoordinates = require('../middleware/reverseGeo');
 const { ensureAuth } = require('../middleware/authmiddleware');
 
-
+////////////////////////////////////////////////////////////////////////////////////
 const Product = require("../model/Product");
 const multer = require("multer");
 const path = require("path");
@@ -17,34 +17,124 @@ const fs = require('fs');
 
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const dir = "public/uploads/";
-    // Check if folder exists; if not, create it
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true });
-    }
-    cb(null, dir);
+  destination: (req, file, cb) => {
+    const uploadDir = "public/uploads"
+    if (!fs.existsSync(uploadDir)){fs.mkdirSync(uploadDir, { recursive: true });} 
+    cb(null, uploadDir);
   },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
+/////////////////////////////////////////////////////////////////////////////
+
+// --- Post new product ---
+router.post("/marketplace", ensureAuth, upload.single("image"), async (req, res) => {
+  try {
+    const product = new Product({
+      name: req.body.name,
+      description: req.body.description,
+      price: req.body.price,
+      category: req.body.category,
+      condition: req.body.condition,
+      seller: req.user._id,
+    });
+
+    if(req.file){
+      product.imageUrl = `/uploads/${req.file.filename}`;
+    }
+
+    await product.save();
+    res.redirect("/employer/marketplace");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error posting product");
   }
 });
 
-const upload = multer({ storage: storage });
+// --- Edit product (only owner) ---
+router.post("/marketplace/edit/:id", ensureAuth, upload.single("image"), async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) return res.status(404).send("Product not found");
+    if (product.seller.toString() !== req.user._id.toString())
+      return res.status(403).send("Not authorized");
+
+    // Update fields
+    product.name = req.body.name;
+    product.description = req.body.description;
+    product.price = req.body.price;
+    product.category = req.body.category;
+    product.condition = req.body.condition;
+
+    if (req.file) {
+      product.imageUrl = `/uploads/products/${req.file.filename}`;
+    }
+
+    await product.save();
+    res.redirect("/employer/marketplace");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error editing product");
+  }
+});
+
+// --- Delete product (only owner) ---
+router.post("/marketplace/delete/:id", ensureAuth, async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+
+    if (!product) return res.status(404).send("Product not found");
+    
+    if (product.seller.toString() !== req.user._id.toString())
+      return res.status(403).send("Not authorized");
 
 
+        // ✅ Delete image from disk if it exists and isn't a placeholder
+    if (product.imageUrl && !product.imageUrl.startsWith("http")) {
+      // Build the full path
+      const imagePath = path.join(__dirname, "..", product.imageUrl);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath); // delete file
+      }
+    }
 
 
+    await product.deleteOne();
+    res.redirect("/employer/marketplace");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error deleting product");
+  }
+});
+
+/////////////////////////////////////////////////////////////////////////////
+
+router.get("/marketplace", ensureAuth, async (req, res) => {
+  try {
+    const products = await Product.find({})
+      .populate("seller", "username email")
+      .sort({ createdAt: -1 });
+    res.render("marketplace", { products, user: req.user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading marketplace");
+  }
+});
 
 // Employer Home
-router.get('/home', async (req, res) => {
+// Employer Home
+router.get('/home', ensureAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
     if (!user) {
       return res.render('employerhome', { jobs: [], smartSuggestions: [] });
-
     }
 
     // Extract emails from user's contacts
@@ -53,7 +143,7 @@ router.get('/home', async (req, res) => {
     // Find employer IDs for these emails
     const employerIds = await User.find({ email: { $in: contactEmails } }).distinct('_id');
 
-    // Find jobs posted by these employers
+    // Find jobs posted by these employers (for smart suggestions only)
     const jobsByContacts = await Job.find({ employerid: { $in: employerIds } });
 
     // Fetch freelancers who were hired for jobs
@@ -67,8 +157,8 @@ router.get('/home', async (req, res) => {
       )
     );
 
-    // Fetch all jobs for stats
-    const jobs = await Job.find();
+    // ✅ Fetch only this employer's jobs for stats
+    const jobs = await Job.find({ employerid: req.user._id });
 
     res.render('employerhome', {
       jobs,
@@ -79,8 +169,6 @@ router.get('/home', async (req, res) => {
     res.render('employerhome', { jobs: [], smartSuggestions: [] });
   }
 });
-
-
 
 // Messages Page
 router.get('/messages',ensureAuth, (req, res) => {
@@ -98,12 +186,10 @@ router.get('/payments',ensureAuth, (req, res) => {
 
 
 // routes/employer.js
-// routes/employer.js
-router.post("/jobs",ensureAuth,async (req, res) => {
+// POST create or update job
+router.post("/jobs", ensureAuth, async (req, res) => {
   try {
     const { id, title, description, salary, contact, latitude, longitude } = req.body;
-
-    // Get employer id from logged-in user
     const employer = req.user._id;
 
     let updateData = { 
@@ -111,35 +197,29 @@ router.post("/jobs",ensureAuth,async (req, res) => {
       description, 
       salary, 
       contact, 
-      employerid: employer // 👈 add employerid here
+      employerid: employer // ✅ always save employerid
     };
 
-    // Only if new coordinates were provided
     if (latitude && longitude) {
       const location = {
         type: "Point",
         coordinates: [parseFloat(longitude), parseFloat(latitude)]
       };
-
       const city = await getCityFromCoordinates(latitude, longitude);
       updateData.location = location;
       updateData.city = city;
     }
 
     if (id) {
-      // Update existing job
       await Job.findByIdAndUpdate(id, updateData);
     } else {
-      // Create new job (must have location!)
       if (!latitude || !longitude) {
         return res.status(400).send("Location required for new jobs");
       }
-
       const location = {
         type: "Point",
         coordinates: [parseFloat(longitude), parseFloat(latitude)]
       };
-
       const city = await getCityFromCoordinates(latitude, longitude);
 
       const job = new Job({
@@ -149,7 +229,7 @@ router.post("/jobs",ensureAuth,async (req, res) => {
         contact,
         location,
         city,
-        employerid: employer // 👈 add employerid here as well
+        employerid: employer // ✅ save employerid
       });
       await job.save();
     }
@@ -160,6 +240,7 @@ router.post("/jobs",ensureAuth,async (req, res) => {
     res.status(500).send("Error posting/updating job");
   }
 });
+
 
 // Hire applicant and ensure chat is properly populated
 router.post("/jobs/:jobId/hire/:applicantId",ensureAuth ,async (req, res) => {
@@ -213,13 +294,14 @@ router.post("/jobs/:jobId/hire/:applicantId",ensureAuth ,async (req, res) => {
     res.status(500).send("Error hiring applicant");
   }
 });
-// GET all jobs
-router.get("/jobs",ensureAuth ,async (req, res) => {
+// GET all jobs for logged-in employer only
+router.get("/jobs", ensureAuth, async (req, res) => {
+
   try {
-    const jobs = await Job.find();
+    const jobs = await Job.find({ employerid: req.user._id }); // ✅ FIXED
     res.render("jobs", { jobs });
   } catch (error) {
-    console.error(error);
+    console.error("❌ Error loading jobs:", error);
     res.status(500).send("Error loading jobs");
   }
 });
@@ -441,33 +523,39 @@ router.get("/marketplace", async (req, res) => {
 
 
 // Add new product with image upload
-router.post("/marketplace", ensureAuth, async (req, res) => {
-  try {
-    const { name, description, price, category, condition } = req.body;
+// Add new product with image upload
+router.post(
+  "/marketplace",
+  ensureAuth,
+  upload.single("image"),   // ✅ FIX: attach multer here
+  async (req, res) => {
+    try {
+      const { name, description, price, category, condition } = req.body;
 
-    // Create a new product and attach the seller ID
-    const newProduct = new Product({
-      name,
-      description,
-      price,
-      category,
-      condition,
-      seller: req.user._id // <-- This stores the current user's ID
-    });
+      // Create a new product and attach the seller ID
+      const newProduct = new Product({
+        name,
+        description,
+        price,
+        category,
+        condition,
+        seller: req.user._id
+      });
 
-    // Handle image if uploaded
-    if (req.file) {
-      newProduct.imageUrl = `/uploads/${req.file.filename}`;
+      // Handle image if uploaded
+      if (req.file) {
+        newProduct.imageUrl = `/uploads/${req.file.filename}`; // ✅ save relative path
+      }
+
+      await newProduct.save();
+      res.redirect("/employer/marketplace");
+    } catch (error) {
+      console.error("❌ Error creating product:", error);
+      res.redirect("/employer/marketplace");
     }
-
-    await newProduct.save();
-
-    res.redirect("/employer/marketplace");
-  } catch (error) {
-    console.error("Error creating product:", error);
-    res.redirect("/employer/marketplace");
   }
-});
+);
+
 
 
 router.post("/marketplace/delete/:id", ensureAuth, async (req, res) => {
