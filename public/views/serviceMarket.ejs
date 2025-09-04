@@ -94,9 +94,11 @@ body { font-family: 'Inter', sans-serif; background-color: var(--background-colo
                     </button>
                   </form>
                 <% } %>
-                <a href="/chat/<%= product.seller %>" class="icon-btn message">
-                  <span class="material-symbols-outlined">message</span> Message
-                </a>
+              <form action="/service/<%= product._id %>/chat" method="POST">
+    <button type="submit" class="icon-btn message">
+      <span class="material-symbols-outlined">message</span> Message
+    </button>
+  </form>
               </div>
 
             </div>

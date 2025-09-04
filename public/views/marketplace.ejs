@@ -69,24 +69,32 @@ body { font-family: 'Inter', sans-serif; background-color: var(--background-colo
 
               <!-- Options menu -->
               <div class="options-menu flex flex-col">
-                <button class="icon-btn edit edit-btn"
-                        data-id="<%= product._id %>"
-                        data-name="<%= product.name %>"
-                        data-description="<%= product.description %>"
-                        data-price="<%= product.price %>"
-                        data-category="<%= product.category %>"
-                        data-condition="<%= product.condition %>">
-                  <span class="material-symbols-outlined">edit</span> Edit
-                </button>
-                <form action="/employer/marketplace/delete/<%= product._id %>" method="POST">
-                  <button type="submit" class="icon-btn delete">
-                    <span class="material-symbols-outlined">delete</span> Delete
-                  </button>
-                </form>
-                <a href="/chat/<%= product.seller %>" class="icon-btn message">
-                  <span class="material-symbols-outlined">message</span> Message
-                </a>
-              </div>
+  <!-- Edit button -->
+  <button class="icon-btn edit edit-btn"
+          data-id="<%= product._id %>"
+          data-name="<%= product.name %>"
+          data-description="<%= product.description %>"
+          data-price="<%= product.price %>"
+          data-category="<%= product.category %>"
+          data-condition="<%= product.condition %>">
+    <span class="material-symbols-outlined">edit</span> Edit
+  </button>
+
+  <!-- Delete form -->
+  <form action="/employer/marketplace/delete/<%= product._id %>?_method=DELETE" method="POST">
+    <button type="submit" class="icon-btn delete">
+      <span class="material-symbols-outlined">delete</span> Delete
+    </button>
+  </form>
+
+  <!-- Message form -->
+  <form action="/employer/<%= product._id %>/chat" method="POST">
+    <button type="submit" class="icon-btn message">
+      <span class="material-symbols-outlined">message</span> Message
+    </button>
+  </form>
+</div>
+
 
             </div>
           </div>

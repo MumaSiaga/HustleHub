@@ -23,10 +23,10 @@
   </style>
 </head>
 <body class="bg-[var(--background-color)] text-[var(--text-primary)]">
-  <%- include('partials/navigation') %>
+  <%- include('partials/nav') %>
 
   <section class="main_content flex h-screen">
-    <%- include('partials/topbar') %>
+    <%- include('partials/bar') %>
 
     <!-- Chat list panel -->
     <aside class="w-80 border-l border-gray-200 overflow-y-auto bg-white">
@@ -42,7 +42,7 @@
                  const lastMsg = lastMsgObj ? lastMsgObj.content : "No messages yet";
                  const lastTime = lastMsgObj ? new Date(lastMsgObj.timestamp).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) : "";
             %>
-            <a href="/service/<%= chatItem._id %>" class="flex items-center gap-4 p-4 hover:bg-[var(--secondary-color)] rounded-lg transition-colors">
+            <a href="/employer/<%= chatItem._id %>" class="flex items-center gap-4 p-4 hover:bg-[var(--secondary-color)] rounded-lg transition-colors">
               <div class="w-14 h-14 bg-center bg-no-repeat bg-cover rounded-full" 
                    style='background-image: url("<%= other?.profileImage || "../visuals/profile pics.jpg" %>");'></div>
               <div class="flex-1 overflow-hidden">
@@ -66,7 +66,7 @@
       <div class="p-4 border-b border-gray-200 flex items-center gap-4">
         <div class="w-12 h-12 rounded-full bg-center bg-cover" style="background-image: url('<%= otherUser?.profileImage || 'https://via.placeholder.com/150/2563eb/ffffff?text=User' %>');"></div>
         <h2 class="font-semibold text-lg"><%= otherUser?.username || "Unknown" %></h2>
-        <form action="/service/<%= chat._id %>?_method=DELETE" class="ml-auto" method="POST">
+        <form action="/employer/<%= chat._id %>?_method=DELETE" class="ml-auto" method="POST">
     <button type="submit" class="text-gray-500 hover:text-red-600 transition" title="Delete Chat">
       <svg xmlns="http://www.w3.org/2000/svg"
            fill="none"
