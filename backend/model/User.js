@@ -18,6 +18,13 @@ const UserSchema = new mongoose.Schema({
       status: { type: String, enum: ['pending', 'rejected', 'hired'], default: 'pending' }
     }
   ],
+  contacts: [
+    {
+      name: { type: String },
+      email: { type: String },
+      phone: { type: String }
+    }
+  ],
   createdAt: { type: Date, default: Date.now }
 });
 

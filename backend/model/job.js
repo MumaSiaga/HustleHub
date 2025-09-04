@@ -1,3 +1,4 @@
+
 const mongoose = require('mongoose');
 
 const JobSchema = new mongoose.Schema({
@@ -31,4 +32,4 @@ const JobSchema = new mongoose.Schema({
 
 JobSchema.index({ location: '2dsphere' });
 
-module.exports = mongoose.model('Job', JobSchema);
+module.exports = mongoose.model('Job', JobSchema);
