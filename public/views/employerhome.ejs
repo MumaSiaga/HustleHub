@@ -34,35 +34,40 @@
         <%- include('partials/bar') %>
 
         <main class="flex-1 p-8 ml-0">
-            <h1 class="text-3xl font-bold text-[var(--text-primary)] mb-8">Dashboard</h1>
-            <form action="/logout" method="POST">
-  <button type="submit" class="logout-btn">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
-         stroke-width="1.5" stroke="currentColor" class="icon">
-      <path stroke-linecap="round" stroke-linejoin="round" 
-            d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75" />
-    </svg>
-    Logout
-  </button>
-</form>
+            <div class="flex items-center justify-between mb-8">
+  <h1 class="text-3xl font-bold text-[var(--text-primary)]">Dashboard</h1>
+  
+  <form action="/logout" method="POST">
+    <button type="submit" class="flex items-center gap-2 text-black-600 hover:text-red-800">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" 
+           stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 
+                 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 
+                 0 0 0 7.5 21h6a2.25 2.25 
+                 0 0 0 2.25-2.25V15M12 9l-3 
+                 3m0 0 3 3m-3-3h12.75" />
+      </svg>
+      Logout
+    </button>
+  </form>
+</div>
+
 
 
 
             <!-- Stats Section -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
                 <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200 card-hover">
                     <p class="text-base font-medium text-[var(--text-secondary)]">Active Jobs</p>
                     <p class="text-3xl font-bold text-[var(--text-primary)] mt-2"><%= jobs ? jobs.length : 0 %></p>
                 </div>
                 <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200 card-hover">
                     <p class="text-base font-medium text-[var(--text-secondary)]">Applications Received</p>
-                    <p class="text-3xl font-bold text-[var(--text-primary)] mt-2">23</p>
-                </div>
-                <div class="bg-white rounded-md shadow-sm p-6 border border-gray-200 card-hover">
-                    <p class="text-base font-medium text-[var(--text-secondary)]">Total Hires</p>
-                    <p class="text-3xl font-bold text-[var(--text-primary)] mt-2">8</p>
+                    <p class="text-3xl font-bold text-[var(--text-primary)] mt-2"><%= jobs && jobs.length ? jobs.reduce((sum, j) => sum + j.applicants.length, 0) : 0 %></p>
                 </div>
             </div>
+
 
             <!-- Smart Suggestions -->
             <div class="mb-8">
@@ -98,7 +103,7 @@
                             Message All Candidates
                         </button>
                     </a>
-                    <a href="/employer/jobs">
+                    <a href="/employer/applicants">
                         <button class="bg-[var(--secondary-color)] text-[var(--primary-color)] px-6 py-3 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)] focus:ring-opacity-50 transition-colors duration-200">
                             View All Applications
                         </button>

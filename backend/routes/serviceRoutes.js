@@ -186,7 +186,7 @@ router.get('/learning', ensureAuth, async function(req,res){
     }
 });
 
-router.get('/feed', async (req, res) => {
+router.get('/feed',ensureAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id); // current user
     const jobs = await Job.find({}).sort({ createdAt: -1 }); // newest first
@@ -290,14 +290,14 @@ router.post('/quiz/:courseId/submit', ensureAuth, async function(req,res){
 
 
 });
-router.get('/map',function(req,res){
+router.get('/map',ensureAuth,function(req,res){
     const MAP_KEY=process.env.MAP_KEY;
     res.render('map',{MAP_KEY});
 });
 
 
 // Forum page
-router.get('/forum', async (req, res) => {
+router.get('/forum',ensureAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
@@ -315,7 +315,7 @@ router.get('/forum', async (req, res) => {
 });
 
 // Add new post
-router.post('/forum/post', async (req, res) => {
+router.post('/forum/post',ensureAuth, async (req, res) => {
   try {
     const { title, content } = req.body;
     const post = new ForumPost({
@@ -332,7 +332,7 @@ router.post('/forum/post', async (req, res) => {
 });
 
 // Add comment
-router.post('/forum/comment/:postId', async (req, res) => {
+router.post('/forum/comment/:postId',ensureAuth, async (req, res) => {
   try {
     const { content } = req.body;
     const post = await ForumPost.findById(req.params.postId);
@@ -347,7 +347,7 @@ router.post('/forum/comment/:postId', async (req, res) => {
 
 
 // Nearby jobs based on current coordinates
-router.post('/nearby-jobs', async (req, res) => {
+router.post('/nearby-jobs',ensureAuth, async (req, res) => {
     try {
         const { latitude, longitude } = req.body;
 
@@ -377,9 +377,22 @@ router.post('/jobs/apply/:jobId', ensureAuth, async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
     const jobId = req.params.jobId;
-
+    console.log(jobId);
     const alreadyApplied = user.appliedJobs.some(a => a.job.toString() === jobId);
+    console.log(alreadyApplied);
     if (!alreadyApplied) {
+       const job = await Job.findById(jobId);
+const applicant = {
+  user: user._id, 
+  name: user.username,
+  email: user.email,
+  skills: user.skills,
+  location: user.location,
+  status: "pending"
+};
+    job.applicants.push(applicant);
+    await job.save();
+
       user.appliedJobs.push({ job: jobId, status: 'pending' }); // add with status
       await user.save();
     }

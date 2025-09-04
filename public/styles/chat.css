@@ -1,0 +1,128 @@
+/* General layout */
+.chat-window {
+  max-width: 700px;
+  margin: 20px auto;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 80vh;
+  background-color: #fefefe;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+/* Header */
+.chat-header {
+  padding: 15px 20px;
+  background-color: #0b93f6;
+  color: white;
+  font-weight: 600;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+}
+
+/* Messages container */
+.chat-messages {
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #e5ddd5;
+}
+
+/* Individual messages */
+.message {
+  max-width: 70%;
+  padding: 10px 15px;
+  border-radius: 20px;
+  position: relative;
+  word-wrap: break-word;
+}
+
+/* Message from me */
+.message.me {
+  align-self: flex-end;
+  background-color: #0b93f6;
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+/* Message from them */
+.message.them {
+  align-self: flex-start;
+  background-color: #fff;
+  color: #333;
+  border-bottom-left-radius: 0;
+}
+
+/* Timestamp */
+.message .timestamp {
+  display: block;
+  font-size: 0.7rem;
+  color: rgba(0,0,0,0.4);
+  margin-top: 5px;
+  text-align: right;
+}
+
+/* No messages text */
+.no-messages {
+  color: rgba(0,0,0,0.5);
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* Input form */
+#messageForm {
+  display: flex;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  background-color: #f6f6f6;
+}
+
+#messageInput {
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+  outline: none;
+  font-size: 1rem;
+}
+
+#messageInput:focus {
+  border-color: #0b93f6;
+}
+
+#messageForm button {
+  background-color: #0b93f6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+#messageForm button:hover {
+  background-color: #0971d3;
+}
+
+/* Scrollbar styling */
+.chat-messages::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
+}
