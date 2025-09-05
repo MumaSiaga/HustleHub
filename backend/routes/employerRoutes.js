@@ -264,8 +264,37 @@ router.post("/jobs/:jobId/hire/:applicantId",ensureAuth ,async (req, res) => {
     // 3. Update status to "hired"
     applicant.status = "hired";
     await job.save();
+    
 
-  
+
+        // 4. Update status in User.appliedJobs
+    // hired applicant
+    await User.updateOne(
+      { _id: applicant.user, "appliedJobs.job": jobId },
+      { $set: { "appliedJobs.$.status": "hired" } }
+    );
+
+    // all other applicants
+    await User.updateMany(
+      { _id: { $in: job.applicants.map(a => a.user).filter(uid => uid.toString() !== applicant.user.toString()) }, "appliedJobs.job": jobId },
+      { $set: { "appliedJobs.$.status": "rejected" } }
+    );
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
     let chat = await Chat.findOne({
       job: job._id,
       participants: { $all: [employerId, applicant.user] }
