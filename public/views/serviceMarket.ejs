@@ -88,7 +88,7 @@ body { font-family: 'Inter', sans-serif; background-color: var(--background-colo
                           data-condition="<%= product.condition %>">
                     <span class="material-symbols-outlined">edit</span> Edit
                   </button>
-                  <form action="/employer/marketplace/delete/<%= product._id %>" method="POST">
+                  <form action="/service/marketplace/delete/<%= product._id %>" method="POST">
                     <button type="submit" class="icon-btn delete">
                       <span class="material-symbols-outlined">delete</span> Delete
                     </button>
@@ -181,7 +181,7 @@ const form = document.getElementById("productForm");
 
 openBtn.addEventListener("click", () => {
   modalTitle.textContent = "Post a New Product";
-  form.action = "/employer/marketplace";
+  form.action = "/service/marketplace";
   document.getElementById("productId").value = "";
   form.reset();
   document.getElementById("wordCount").textContent = "0 / 70 words";
@@ -195,7 +195,7 @@ document.querySelectorAll(".edit-btn").forEach(btn => {
   btn.addEventListener("click", (e) => {
     e.stopPropagation();
     modalTitle.textContent = "Edit Product";
-    form.action = `/employer/marketplace/edit/${btn.dataset.id}`;
+    form.action = `/service/marketplace/edit/${btn.dataset.id}`;
     document.getElementById("productId").value = btn.dataset.id;
     document.getElementById("product-name").value = btn.dataset.name;
     document.getElementById("description").value = btn.dataset.description;
