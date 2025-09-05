@@ -49,7 +49,7 @@ router.post("/marketplace", ensureAuth, upload.single("image"), async (req, res)
     }
 
     await product.save();
-    res.redirect("/employer/marketplace");
+    res.redirect("/service/marketplace");
   } catch (err) {
     console.error(err);
     res.status(500).send("Error posting product");
