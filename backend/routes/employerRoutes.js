@@ -280,7 +280,7 @@ router.post("/jobs/:jobId/hire/:applicantId",ensureAuth ,async (req, res) => {
       { $set: { "appliedJobs.$.status": "rejected" } }
     );
 
-    
+
     
 
 
@@ -418,9 +418,9 @@ router.post("/:productId/chat", ensureAuth, async (req, res) => {
     const participants = [buyerId.toString(), sellerId.toString()].sort();
 
     // 3. Try to find existing chat
-    let chat = await Chat.findOne({
-      product: product._id,
-      participants
+     let chat = await Chat.findOne({
+      participants: { $all: [buyerId, sellerId] },
+      isClosed: false
     });
 
     // 4. If no chat exists, create a new one
