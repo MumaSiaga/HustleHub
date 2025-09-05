@@ -37,9 +37,9 @@ body { font-family: 'Inter', sans-serif; background-color: var(--background-colo
 </style>
 </head>
 <body>
-<%- include('partials/navigation') %>
+<%- include('partials/nav') %>
 <section class="main_content" id="mainContent">
-<%- include('partials/topbar') %>
+<%- include('partials/bar') %>
 
 <main class="container mx-auto px-4 py-8 max-w-7xl">
   <div class="w-full">
@@ -231,6 +231,6 @@ function updateWordCount(textarea) {
   document.getElementById("wordCount").textContent = `${words.length} / 70 words`;
 }
 </script>
-<script src="../scripts/sidebar.js"></script>
+<script src="../scripts/bar.js"></script>
 </body>
 </html>
